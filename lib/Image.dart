@@ -1,5 +1,4 @@
-
 class AppImages {
-  static var backgroundShape = 'assets/Images/backgroundShapes.png';
-  static var appLogo = 'assets/Images/AppLogo.png';
+  static var backgroundShape = 'assets/Images/backgroundhapes.png';
+  static var appLogo = 'assets/Images/applogo.png';
 }
