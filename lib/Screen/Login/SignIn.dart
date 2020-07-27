@@ -75,11 +75,15 @@ class _SignInState extends State<SignIn> {
           Row(
             children: [
               FittedBox(
+                fit: BoxFit.contain,
                 child: Text(
                   'Admin Login',
+                  overflow: TextOverflow.visible,
+                  maxLines: 1,
+                  softWrap: false,
                   style: TextStyle(
                       color: Color(0xffFF6768),
-                      fontSize: 75,
+                      fontSize: 70,
                       fontWeight: FontWeight.bold,
                       letterSpacing: .2),
                 ),

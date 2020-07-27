@@ -59,10 +59,12 @@ class _AcademicYearState extends State<AcademicYear> {
                       Expanded(
                         flex: 1,
                         child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Container(
-                              width: 340,
-                              child: Center(
+                            Padding(
+                              padding: const EdgeInsets.only(left: 200),
+                              child: Container(
+                                width: 350,
                                 child: Column(
                                   crossAxisAlignment:
                                       CrossAxisAlignment.baseline,
@@ -74,11 +76,16 @@ class _AcademicYearState extends State<AcademicYear> {
                                     Row(
                                       children: [
                                         FittedBox(
+                                          fit: BoxFit.contain,
                                           child: Text(
                                             'Academic Year',
+                                            overflow: TextOverflow.visible,
+                                            maxLines: 1,
+                                            softWrap: false,
                                             style: TextStyle(
                                               color: Color(0xffFF6768),
-                                              fontSize: 50,
+                                              fontSize: 45,
+                                              letterSpacing: .2,
                                               fontWeight: FontWeight.bold,
                                             ),
                                           ),
@@ -95,7 +102,6 @@ class _AcademicYearState extends State<AcademicYear> {
                                         color: Color(0xffFFFFFF),
                                       ),
                                       child: SizedBox(
-                                        height: 45,
                                         child: TextField(
                                           controller: _textEditingController,
                                           enabled: true,
@@ -116,15 +122,7 @@ class _AcademicYearState extends State<AcademicYear> {
                                           onChanged: (value) {
                                             _year = value;
                                           },
-                                          onSubmitted: (value) {
-                                            setState(() {
-                                              Year year = Year(
-                                                  id: UniqueKey().toString(),
-                                                  year: value);
-                                              yearsList.getYear.add(year);
-                                              _textEditingController.clear();
-                                            });
-                                          },
+                                          onSubmitted: (value) {},
                                         ),
                                       ),
                                     ),
@@ -137,7 +135,15 @@ class _AcademicYearState extends State<AcademicYear> {
                                         InkWell(
                                           splashColor: Colors.black,
                                           onTap: () {
-                                            print('Hi');
+                                            if (_year.isNotEmpty) {
+                                              setState(() {
+                                                Year year = Year(
+                                                    id: UniqueKey().toString(),
+                                                    year: _year);
+                                                yearsList.getYear.add(year);
+                                                _textEditingController.clear();
+                                              });
+                                            }
                                           },
                                           child: Container(
                                             width: 150,
@@ -162,7 +168,7 @@ class _AcademicYearState extends State<AcademicYear> {
                                   ],
                                 ),
                               ),
-                            )
+                            ),
                           ],
                         ),
                       ),
@@ -170,9 +176,10 @@ class _AcademicYearState extends State<AcademicYear> {
                         flex: 1,
                         child: Row(
                           children: [
-                            Container(
-                              width: 300,
-                              child: Center(
+                            Padding(
+                              padding: const EdgeInsets.only(left: 200),
+                              child: Container(
+                                width: 300,
                                 child: Column(
                                   crossAxisAlignment:
                                       CrossAxisAlignment.baseline,
@@ -182,6 +189,9 @@ class _AcademicYearState extends State<AcademicYear> {
                                       children: [
                                         Text(
                                           'Your data is here',
+                                          overflow: TextOverflow.visible,
+                                          maxLines: 1,
+                                          softWrap: false,
                                           style: TextStyle(
                                             color: Color(0xffFFFFFF),
                                             fontSize: 30,
