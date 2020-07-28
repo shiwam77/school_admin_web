@@ -5,6 +5,7 @@ import 'package:school_admin_web/Screen/AcademicYear/AcademicYear.dart';
 import '../../Color.dart';
 import '../../Image.dart';
 import '../../Responsive.dart';
+import 'package:flutter_responsive_screen/flutter_responsive_screen.dart';
 
 class SignIn extends StatefulWidget {
   @override
@@ -14,6 +15,7 @@ class SignIn extends StatefulWidget {
 class _SignInState extends State<SignIn> {
   @override
   Widget build(BuildContext context) {
+
     SizeConfig().init(context);
     return Material(
       child: Stack(
@@ -35,12 +37,14 @@ class _SignInState extends State<SignIn> {
                 Expanded(
                   flex: 1,
                   child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Container(
                         //margin:const EdgeInsets.symmetric(horizontal: 50),
                         child: Image.asset(AppImages.appLogo),
-                        width: 650,
-                        height: 350,
+                        width:SizeConfig.wp(50),
+                        height:SizeConfig.hp(50),
                       ),
                     ],
                   ),
@@ -48,10 +52,15 @@ class _SignInState extends State<SignIn> {
                 //Spacer(),
                 Expanded(
                     flex: 1,
-                    child: Row(
-                      children: [
-                        SignInForm(),
-                      ],
+                    child: Padding(
+                      padding: EdgeInsets.only(top:SizeConfig.hp(20)),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        //crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          SignInForm(),
+                        ],
+                      ),
                     )),
                 //Spacer()
               ],
@@ -64,14 +73,11 @@ class _SignInState extends State<SignIn> {
 
   Widget SignInForm() {
     return Container(
-      width: 440,
+      width: SizeConfig.blockSizeHorizontal * 25,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.baseline,
         textBaseline: TextBaseline.alphabetic,
         children: [
-          SizedBox(
-            height: 150,
-          ),
           Row(
             children: [
               FittedBox(
@@ -83,15 +89,15 @@ class _SignInState extends State<SignIn> {
                   softWrap: false,
                   style: TextStyle(
                       color: Color(0xffFF6768),
-                      fontSize: 70,
+                      fontSize:SizeConfig.textScaleFactor * 55,
                       fontWeight: FontWeight.bold,
-                      letterSpacing: .2),
+                      letterSpacing: 2),
                 ),
               )
             ],
           ),
           SizedBox(
-            height: 53,
+            height: SizeConfig.hp(5),
           ),
           Container(
             decoration: BoxDecoration(
@@ -120,7 +126,7 @@ class _SignInState extends State<SignIn> {
             ),
           ),
           SizedBox(
-            height: 53,
+            height:SizeConfig.hp(5),
           ),
           Container(
             decoration: BoxDecoration(
@@ -148,7 +154,7 @@ class _SignInState extends State<SignIn> {
               ),
             ),
           ),
-          SizedBox(height: 47),
+          SizedBox(height: SizeConfig.hp(5)),
           Row(
             children: [
               Spacer(),
@@ -169,7 +175,7 @@ class _SignInState extends State<SignIn> {
             ],
           ),
           SizedBox(
-            height: 47,
+            height: SizeConfig.hp(5),
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,

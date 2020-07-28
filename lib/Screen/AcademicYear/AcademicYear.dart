@@ -21,8 +21,8 @@ class _AcademicYearState extends State<AcademicYear> {
   String _year;
   @override
   Widget build(BuildContext context) {
-    return Material(
-      child: Stack(
+    return Scaffold(
+      body: Stack(
         children: [
           Container(
             width: SizeConfig.screenWidth,
@@ -46,14 +46,14 @@ class _AcademicYearState extends State<AcademicYear> {
                       Container(
                         //margin:const EdgeInsets.symmetric(horizontal: 50),
                         child: Image.asset(AppImages.appLogo),
-                        width: 200,
-                        height: 200,
+                        width: SizeConfig.wp(20),
+                        height:SizeConfig.hp(20)
                       ),
                     ],
                   ),
                 ),
                 Expanded(
-                  flex: 2,
+                  flex: 3,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -62,112 +62,109 @@ class _AcademicYearState extends State<AcademicYear> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Padding(
-                              padding: const EdgeInsets.only(left: 200),
-                              child: Container(
-                                width: 350,
-                                child: Column(
-                                  crossAxisAlignment:
-                                      CrossAxisAlignment.baseline,
-                                  textBaseline: TextBaseline.alphabetic,
-                                  children: [
-                                    SizedBox(
-                                      height: 40,
+                            Container(
+                              width: SizeConfig.wp(30),
+                              child: Column(
+                                crossAxisAlignment:
+                                    CrossAxisAlignment.baseline,
+                                textBaseline: TextBaseline.alphabetic,
+                                children: [
+                                  SizedBox(
+                                    height:SizeConfig.hp(10),
+                                  ),
+                                  Row(
+                                    children: [
+                                      FittedBox(
+                                        fit: BoxFit.contain,
+                                        child: Text(
+                                          'Academic Year',
+                                          overflow: TextOverflow.visible,
+                                          maxLines: 1,
+                                          softWrap: false,
+                                          style: TextStyle(
+                                            color: Color(0xffFF6768),
+                                            fontSize: SizeConfig.textScaleFactor * 50,
+                                            letterSpacing: .2,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  SizedBox(
+                                    height: SizeConfig.hp(5),
+                                  ),
+                                  Container(
+                                    decoration: BoxDecoration(
+                                      borderRadius:
+                                          BorderRadius.circular(32.0),
+                                      color: Color(0xffFFFFFF),
                                     ),
-                                    Row(
-                                      children: [
-                                        FittedBox(
-                                          fit: BoxFit.contain,
+                                    child: SizedBox(
+                                      child: TextField(
+                                        controller: _textEditingController,
+                                        enabled: true,
+                                        decoration: InputDecoration(
+                                          hintText: 'Enter academic year',
+                                          hintStyle: TextStyle(fontSize: 20),
+                                          contentPadding:
+                                              const EdgeInsets.only(
+                                            left: 20,
+                                            right: 20,
+                                          ),
+                                          border: OutlineInputBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(32.0),
+                                            borderSide: BorderSide.none,
+                                          ),
+                                        ),
+                                        onChanged: (value) {
+                                          _year = value;
+                                        },
+                                        onSubmitted: (value) {},
+                                      ),
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    height:SizeConfig.hp(2.5),
+                                  ),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: [
+                                      InkWell(
+                                        splashColor: Colors.black,
+                                        onTap: () {
+                                          if (_year.isNotEmpty) {
+                                            setState(() {
+                                              Year year = Year(
+                                                  id: UniqueKey().toString(),
+                                                  year: _year);
+                                              yearsList.getYear.add(year);
+                                              _textEditingController.clear();
+                                            });
+                                          }
+                                        },
+                                        child: Container(
+                                          width: SizeConfig.wp(8),
+                                          height:SizeConfig.hp(7),
+                                          decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(32),
+                                            color: Color(0xffFF6768),
+                                          ),
+                                          alignment: Alignment.center,
                                           child: Text(
-                                            'Academic Year',
-                                            overflow: TextOverflow.visible,
-                                            maxLines: 1,
-                                            softWrap: false,
+                                            'Enter',
                                             style: TextStyle(
-                                              color: Color(0xffFF6768),
-                                              fontSize: 45,
-                                              letterSpacing: .2,
-                                              fontWeight: FontWeight.bold,
-                                            ),
+                                                color: Color(0xffffffff),
+                                                fontSize: SizeConfig.textScaleFactor * 25,
+                                                fontWeight: FontWeight.bold),
                                           ),
-                                        ),
-                                      ],
-                                    ),
-                                    SizedBox(
-                                      height: 50,
-                                    ),
-                                    Container(
-                                      decoration: BoxDecoration(
-                                        borderRadius:
-                                            BorderRadius.circular(32.0),
-                                        color: Color(0xffFFFFFF),
-                                      ),
-                                      child: SizedBox(
-                                        child: TextField(
-                                          controller: _textEditingController,
-                                          enabled: true,
-                                          decoration: InputDecoration(
-                                            hintText: 'Enter academic year',
-                                            hintStyle: TextStyle(fontSize: 20),
-                                            contentPadding:
-                                                const EdgeInsets.only(
-                                              left: 20,
-                                              right: 20,
-                                            ),
-                                            border: OutlineInputBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(32.0),
-                                              borderSide: BorderSide.none,
-                                            ),
-                                          ),
-                                          onChanged: (value) {
-                                            _year = value;
-                                          },
-                                          onSubmitted: (value) {},
                                         ),
                                       ),
-                                    ),
-                                    SizedBox(
-                                      height: 40,
-                                    ),
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment.end,
-                                      children: [
-                                        InkWell(
-                                          splashColor: Colors.black,
-                                          onTap: () {
-                                            if (_year.isNotEmpty) {
-                                              setState(() {
-                                                Year year = Year(
-                                                    id: UniqueKey().toString(),
-                                                    year: _year);
-                                                yearsList.getYear.add(year);
-                                                _textEditingController.clear();
-                                              });
-                                            }
-                                          },
-                                          child: Container(
-                                            width: 150,
-                                            height: 45,
-                                            decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(32),
-                                              color: Color(0xffFF6768),
-                                            ),
-                                            alignment: Alignment.center,
-                                            child: Text(
-                                              'Enter',
-                                              style: TextStyle(
-                                                  color: Color(0xffffffff),
-                                                  fontSize: 25,
-                                                  fontWeight: FontWeight.bold),
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    )
-                                  ],
-                                ),
+                                    ],
+                                  )
+                                ],
                               ),
                             ),
                           ],
@@ -176,54 +173,53 @@ class _AcademicYearState extends State<AcademicYear> {
                       Expanded(
                         flex: 1,
                         child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Padding(
-                              padding: const EdgeInsets.only(left: 200),
-                              child: Container(
-                                width: 300,
-                                child: Column(
-                                  crossAxisAlignment:
-                                      CrossAxisAlignment.baseline,
-                                  textBaseline: TextBaseline.alphabetic,
-                                  children: [
-                                    Row(
-                                      children: [
-                                        Text(
-                                          'Your data is here',
-                                          overflow: TextOverflow.visible,
-                                          maxLines: 1,
-                                          softWrap: false,
-                                          style: TextStyle(
-                                            color: Color(0xffFFFFFF),
-                                            fontSize: 30,
-                                            fontWeight: FontWeight.bold,
-                                          ),
+                            Container(
+                              width: SizeConfig.wp(20),
+                              child: Column(
+                                crossAxisAlignment:
+                                    CrossAxisAlignment.baseline,
+                                textBaseline: TextBaseline.alphabetic,
+                                children: [
+                                  Row(
+                                    children: [
+                                      Text(
+                                        'Your data is here',
+                                        overflow: TextOverflow.visible,
+                                        maxLines: 1,
+                                        softWrap: false,
+                                        style: TextStyle(
+                                          color: Color(0xffFFFFFF),
+                                          fontSize: SizeConfig.textScaleFactor * 30,
+                                          fontWeight: FontWeight.bold,
                                         ),
-                                      ],
-                                    ),
-                                    SizedBox(
-                                      height: 10,
-                                    ),
-                                    Container(
-                                        height: 400,
-                                        decoration: BoxDecoration(
-                                            shape: BoxShape.rectangle,
-                                            border: Border.all(
-                                                color: Color(0xffFFFFFF))),
-                                        child: Scrollbar(
-                                          controller: _scrollController,
-                                          isAlwaysShown: true,
-                                          child: ListView.builder(
-                                              controller: _scrollController,
-                                              scrollDirection: Axis.vertical,
-                                              itemCount:
-                                                  yearsList.getYear.length,
-                                              itemBuilder: (context, index) =>
-                                                  CustomListTile(index)),
-                                        )),
-                                    Spacer()
-                                  ],
-                                ),
+                                      ),
+                                    ],
+                                  ),
+                                  SizedBox(
+                                    height: 10,
+                                  ),
+                                  Container(
+                                      height: SizeConfig.hp(50),
+                                      decoration: BoxDecoration(
+                                          shape: BoxShape.rectangle,
+                                          border: Border.all(
+                                              color: Color(0xffFFFFFF))),
+                                      child: Scrollbar(
+                                        controller: _scrollController,
+                                        isAlwaysShown: true,
+                                        child: ListView.builder(
+                                            controller: _scrollController,
+                                            scrollDirection: Axis.vertical,
+                                            itemCount:
+                                                yearsList.getYear.length,
+                                            itemBuilder: (context, index) =>
+                                                CustomListTile(index)),
+                                      )),
+                                  Spacer()
+                                ],
                               ),
                             )
                           ],

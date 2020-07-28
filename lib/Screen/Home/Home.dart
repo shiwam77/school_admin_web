@@ -2,6 +2,7 @@ import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:school_admin_web/Color.dart';
+import 'package:school_admin_web/Responsive.dart';
 
 import 'GenderRatioBarChart.dart';
 import 'TimeSeriesChart.dart';
@@ -43,7 +44,7 @@ class _HomeState extends State<Home> {
                         width: 300,
                         decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(32.0),
-                            color: Color(0xff6B778D).withOpacity(.4),
+                            color: Color(0xff000000).withOpacity(.4),
                             boxShadow: [
                               BoxShadow(
                                 color: Color(0xff707070).withOpacity(.4),
@@ -112,7 +113,7 @@ class _HomeState extends State<Home> {
                 horizontal: 40,
               ),
               child: Divider(
-                thickness: 1,
+                thickness: .5,
                 color: Color(0xff6B778D).withOpacity(.5),
               ),
             ),
@@ -145,7 +146,7 @@ class _HomeState extends State<Home> {
                           'Student Growth',
                           style: TextStyle(
                               color: Color(0xff263859),
-                              fontSize: 40,
+                              fontSize: SizeConfig.textScaleFactor * 30,
                               letterSpacing: 1,
                               fontWeight: FontWeight.bold),
                         ),
@@ -153,8 +154,8 @@ class _HomeState extends State<Home> {
                           child: Padding(
                             padding: const EdgeInsets.only(left: 20),
                             child: Divider(
-                              thickness: 1,
-                              height: 1,
+                              thickness: .5,
+
                               color: Color(0xff6B778D).withOpacity(.5),
                             ),
                           ),
@@ -176,7 +177,7 @@ class _HomeState extends State<Home> {
                           'Gender Ratio',
                           style: TextStyle(
                               color: Color(0xff263859),
-                              fontSize: 40,
+                              fontSize:  SizeConfig.textScaleFactor * 30,
                               letterSpacing: 1,
                               fontWeight: FontWeight.bold),
                         ),
@@ -184,8 +185,8 @@ class _HomeState extends State<Home> {
                           child: Padding(
                             padding: const EdgeInsets.only(left: 20),
                             child: Divider(
-                              thickness: 1,
-                              height: 1,
+                              thickness: .5,
+                              height: .5,
                               color: Color(0xff6B778D).withOpacity(.5),
                             ),
                           ),
@@ -195,7 +196,7 @@ class _HomeState extends State<Home> {
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 175, vertical: 20),
+                        horizontal: 155, vertical: 20),
                     child: genderRatioMetrics(
                         malePercentage: '60%',
                         femalePercentage: '39%',
@@ -261,7 +262,7 @@ class _HomeState extends State<Home> {
       padding: const EdgeInsets.only(left: 150),
       child: Container(
         width: double.infinity,
-        height: 75,
+        height: SizeConfig.hp(8),
         child: Stack(
           children: [
             Container(
@@ -272,7 +273,7 @@ class _HomeState extends State<Home> {
                 // border: Border.all(color: Color(0xff707070)),
               ),
               child: Padding(
-                padding: const EdgeInsets.all(8.0),
+                padding: const EdgeInsets.symmetric(vertical: 2,horizontal: 10),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -285,7 +286,7 @@ class _HomeState extends State<Home> {
                             maxLines: 1,
                             style: TextStyle(
                                 color: AppColors.white,
-                                fontSize: 15,
+                                fontSize: SizeConfig.textScaleFactor * 12,
                                 fontWeight: FontWeight.w400,
                                 letterSpacing: .2)),
                       ],
@@ -310,8 +311,8 @@ class _HomeState extends State<Home> {
             Positioned(
               left: 115,
               child: Container(
-                width: 800,
-                height: 75,
+                width: SizeConfig.wp(50),
+                height: SizeConfig.hp(8),
                 decoration: BoxDecoration(
                     color: AppColors.white,
                     borderRadius: BorderRadius.all(Radius.circular(15)),
@@ -330,7 +331,7 @@ class _HomeState extends State<Home> {
                   children: [
                     Padding(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 15, vertical: 10),
+                          horizontal: 15, vertical: 5),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -367,7 +368,7 @@ class _HomeState extends State<Home> {
                           itemCount: classList.length,
                           separatorBuilder: (context, index) {
                             return Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 22),
+                              padding: const EdgeInsets.symmetric(vertical: 15),
                               child: Container(
                                 width: 1,
                                 color: Color(0xff6B778D),
@@ -378,7 +379,7 @@ class _HomeState extends State<Home> {
                             List<String> absent = metrics();
                             return Padding(
                               padding: const EdgeInsets.symmetric(
-                                  horizontal: 5, vertical: 15),
+                                  horizontal: 5, vertical: 8),
                               child: Container(
                                 height: 70,
                                 width: 80,
@@ -456,14 +457,14 @@ class _HomeState extends State<Home> {
       children: [
         Container(
             height: 350,
-            width: 450,
+            width: SizeConfig.wp(30),
             child: StackedFillColorBarChart(
               createSampleData(),
               animate: true,
             )),
         Container(
-          height: 200,
-          width: 300,
+          height: SizeConfig.hp(30),
+          width: SizeConfig.wp(20),
           decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(16),
               color: AppColors.white,
