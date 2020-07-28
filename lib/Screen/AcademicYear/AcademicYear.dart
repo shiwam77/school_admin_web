@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:school_admin_web/Model/AcademicYear.dart';
+import 'package:school_admin_web/Screen/DashBoard/DashBoard.dart';
 
 import '../../Color.dart';
 import '../../Image.dart';
@@ -240,43 +241,47 @@ class _AcademicYearState extends State<AcademicYear> {
   }
 
   Widget CustomListTile(int index) {
-    return Padding(
-      key: ValueKey(index),
-      padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 20),
-      child: Container(
-        height: 50,
-        child: Row(
-          children: [
-            Transform.rotate(
-                angle: 90 * pi / 180,
-                child: Icon(
-                  Icons.touch_app,
-                  color: Colors.white,
-                  size: 18,
-                )),
-            SizedBox(
-              width: 15,
-            ),
-            Text(yearsList.getYear[index].year,
-                style: TextStyle(fontSize: 18, color: Color(0xffFFFFFF))),
-            Spacer(),
-            Text(
-              'Edit',
-              style: TextStyle(fontSize: 13, color: Color(0xffFFFFFF)),
-            ),
-            SizedBox(
-              width: 30,
-            ),
-            GestureDetector(
-              onTap: () {
-                setState(() {
-                  yearsList.getYear.removeAt(index);
-                });
-              },
-              child: Text('Delete',
-                  style: TextStyle(fontSize: 13, color: Color(0xffFF6768))),
-            ),
-          ],
+    return InkWell(
+      onTap: () => Navigator.push(
+          context, MaterialPageRoute(builder: (context) => DashBoard())),
+      child: Padding(
+        key: ValueKey(index),
+        padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 20),
+        child: Container(
+          height: 50,
+          child: Row(
+            children: [
+              Transform.rotate(
+                  angle: 90 * pi / 180,
+                  child: Icon(
+                    Icons.touch_app,
+                    color: Colors.white,
+                    size: 18,
+                  )),
+              SizedBox(
+                width: 15,
+              ),
+              Text(yearsList.getYear[index].year,
+                  style: TextStyle(fontSize: 18, color: Color(0xffFFFFFF))),
+              Spacer(),
+              Text(
+                'Edit',
+                style: TextStyle(fontSize: 13, color: Color(0xffFFFFFF)),
+              ),
+              SizedBox(
+                width: 30,
+              ),
+              GestureDetector(
+                onTap: () {
+                  setState(() {
+                    yearsList.getYear.removeAt(index);
+                  });
+                },
+                child: Text('Delete',
+                    style: TextStyle(fontSize: 13, color: Color(0xffFF6768))),
+              ),
+            ],
+          ),
         ),
       ),
     );
