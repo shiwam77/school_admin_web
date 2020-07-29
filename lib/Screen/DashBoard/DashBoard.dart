@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:school_admin_web/Screen/ClassSetup/ManageClass.dart';
 import 'package:school_admin_web/Screen/Home/Home.dart';
+import 'package:school_admin_web/Widget/CenterView.dart';
 
 import '../../Color.dart';
 import '../../Image.dart';
@@ -22,9 +24,24 @@ class _DashBoardState extends State<DashBoard> {
             width: SizeConfig.screenWidth,
             height: SizeConfig.screenHeight,
             color: AppColors.loginBackgroundColor,
-            child: Image.asset(
-              AppImages.backgroundShape,
-              fit: BoxFit.fill,
+            child: Stack(
+              children: [
+                Image.asset(
+                  AppImages.backgroundShape,
+                  fit: BoxFit.fill,
+                ),
+                Align(
+                  alignment: Alignment.topRight,
+                  child: Padding(
+                    padding: EdgeInsets.only(top: 10,right: SizeConfig.wp(2),bottom:SizeConfig.hp(2.5)),
+                    child: Image.asset(
+                      AppImages.homePanelLogo,
+                      height: SizeConfig.hp(4),
+                      width: 250,
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
           Positioned(
@@ -42,7 +59,7 @@ class _DashBoardState extends State<DashBoard> {
               child: Row(
                 children: [
                   MasterPage(),
-                  Home(),
+                  ManageClass(),
                 ],
               ),
             ),

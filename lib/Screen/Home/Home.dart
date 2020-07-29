@@ -44,7 +44,7 @@ class _HomeState extends State<Home> {
                         width: 300,
                         decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(32.0),
-                            color: Color(0xff000000).withOpacity(.4),
+                            color: Color(0xff6B778D).withOpacity(.4),
                             boxShadow: [
                               BoxShadow(
                                 color: Color(0xff707070).withOpacity(.4),
@@ -53,6 +53,7 @@ class _HomeState extends State<Home> {
                               ),
                             ]),
                         child: SizedBox(
+                          height: SizeConfig.hp(6),
                           child: TextField(
                             cursorColor: AppColors.white,
                             style: TextStyle(
@@ -164,8 +165,8 @@ class _HomeState extends State<Home> {
                     ),
                   ),
                   Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 155, vertical: 10),
+                    padding: EdgeInsets.only(
+                        left: 155,right: 100,top: 10 ,bottom: 10),
                     child: getMetricTrend(metricTrends: getmetrics.data),
                   ),
                   Padding(
@@ -195,8 +196,8 @@ class _HomeState extends State<Home> {
                     ),
                   ),
                   Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 155, vertical: 20),
+                    padding: const EdgeInsets.only(
+                        left: 155,right: 100,top: 20 ,bottom: 20),
                     child: genderRatioMetrics(
                         malePercentage: '60%',
                         femalePercentage: '39%',
@@ -438,6 +439,7 @@ class _HomeState extends State<Home> {
     // var formattedDate = DateFormat("y-M-dTH:m:sZ");
     return [
       charts.Series(
+        id: 'student Count',
         colorFn: (_, __) => charts.Color.fromHex(code: "#FF6768"),
         domainFn: (MetricTrend trend, _) => DateTime.parse(trend.time),
         measureFn: (MetricTrend trend, _) => trend.targetProgressValue,

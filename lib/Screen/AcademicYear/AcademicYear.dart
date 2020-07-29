@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:school_admin_web/Model/AcademicYear.dart';
 import 'package:school_admin_web/Screen/DashBoard/DashBoard.dart';
+import 'package:school_admin_web/Widget/CenterView.dart';
 
 import '../../Color.dart';
 import '../../Image.dart';
@@ -36,11 +37,10 @@ class _AcademicYearState extends State<AcademicYear> {
           Container(
             width: SizeConfig.screenWidth,
             height: SizeConfig.screenHeight,
-            child: Column(
-              children: [
-                Expanded(
-                  flex: 1,
-                  child: Column(
+            child: CenterView(
+              child: Column(
+                children: [
+                  Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Container(
@@ -51,19 +51,18 @@ class _AcademicYearState extends State<AcademicYear> {
                       ),
                     ],
                   ),
-                ),
-                Expanded(
-                  flex: 3,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Expanded(
-                        flex: 1,
-                        child: Row(
+                  Expanded(
+                    flex: 3,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Spacer(),
+                        Row(
                           mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             Container(
-                              width: SizeConfig.wp(30),
+                              width: SizeConfig.wp(20),
                               child: Column(
                                 crossAxisAlignment:
                                     CrossAxisAlignment.baseline,
@@ -83,7 +82,7 @@ class _AcademicYearState extends State<AcademicYear> {
                                           softWrap: false,
                                           style: TextStyle(
                                             color: Color(0xffFF6768),
-                                            fontSize: SizeConfig.textScaleFactor * 50,
+                                            fontSize: SizeConfig.textScaleFactor * 35,
                                             letterSpacing: .2,
                                             fontWeight: FontWeight.bold,
                                           ),
@@ -157,7 +156,7 @@ class _AcademicYearState extends State<AcademicYear> {
                                             'Enter',
                                             style: TextStyle(
                                                 color: Color(0xffffffff),
-                                                fontSize: SizeConfig.textScaleFactor * 25,
+                                                fontSize: SizeConfig.textScaleFactor * 20,
                                                 fontWeight: FontWeight.bold),
                                           ),
                                         ),
@@ -169,10 +168,8 @@ class _AcademicYearState extends State<AcademicYear> {
                             ),
                           ],
                         ),
-                      ),
-                      Expanded(
-                        flex: 1,
-                        child: Row(
+                        SizedBox(width: SizeConfig.wp(30),),
+                        Row(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
@@ -218,17 +215,18 @@ class _AcademicYearState extends State<AcademicYear> {
                                             itemBuilder: (context, index) =>
                                                 CustomListTile(index)),
                                       )),
-                                  Spacer()
+
                                 ],
                               ),
                             )
                           ],
                         ),
-                      )
-                    ],
-                  ),
-                )
-              ],
+                        Spacer(),
+                      ],
+                    ),
+                  )
+                ],
+              ),
             ),
           )
         ],
