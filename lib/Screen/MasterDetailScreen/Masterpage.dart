@@ -43,7 +43,7 @@ class _MasterPageState extends State<MasterPage> {
                 softWrap: true,
                 style: TextStyle(
                   color: AppColors.white,
-                  fontSize: 15,
+                  fontSize: 20,
                   fontWeight: FontWeight.normal,
                 )),
           ),

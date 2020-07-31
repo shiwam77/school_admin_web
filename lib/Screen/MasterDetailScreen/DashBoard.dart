@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:school_admin_web/Screen/Attendance/Attendance.dart';
 import 'package:school_admin_web/Screen/ClassSetup/ManageClass.dart';
+import 'package:school_admin_web/Screen/CreateHomework/HomeWork.dart';
 import 'package:school_admin_web/Screen/Home/Home.dart';
+import 'package:school_admin_web/Screen/NewStudent/NewStudent.dart';
 import 'package:school_admin_web/Widget/CenterView.dart';
 
 import '../../Color.dart';
@@ -59,7 +62,7 @@ class _DashBoardState extends State<DashBoard> {
               child: Row(
                 children: [
                   MasterPage(),
-                  ManageClass(),
+                  Attendance(),
                 ],
               ),
             ),

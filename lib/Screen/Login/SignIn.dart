@@ -35,10 +35,14 @@ class _SignInState extends State<SignIn> {
             width: SizeConfig.screenWidth,
             height: SizeConfig.screenHeight,
             child: CenterView(
-              child: ScreenTypeLayout(
-                desktop: SignFormDesktop(),
-                tablet: Tablet(),
-                mobile: Tablet(),
+              child:   Row(
+                children: [
+                  Logo (),
+                  //Spacer(),
+                  Expanded(
+                      child: SignForms()),
+                  //Spacer()
+                ],
               ),
             ),
           ),
@@ -47,34 +51,6 @@ class _SignInState extends State<SignIn> {
     );
   }
 
-}
-
-class SignFormDesktop extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      child: Row(
-        children: [
-          Logo (),
-          //Spacer(),
-          Expanded(
-              child: SignForms()),
-          //Spacer()
-        ],
-      ),
-    );
-  }
-}
-class Tablet extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return ListView(
-      children: [
-        LogoTablet(),
-        SignFormsTablet(),
-      ],
-    );
-  }
 }
 
 class SignForms extends StatelessWidget {
@@ -119,7 +95,7 @@ class SignForms extends StatelessWidget {
                     color: Color(0xffFFFFFF),
                   ),
                   child: SizedBox(
-                    height: SizeConfig.hp(7),
+                    height: 55,
                     child: TextField(
                       //textAlign: TextAlign.center,
                       enabled: true,
@@ -148,7 +124,7 @@ class SignForms extends StatelessWidget {
                     color: Color(0xffFFFFFF),
                   ),
                   child: SizedBox(
-                    height: SizeConfig.hp(7),
+                    height: 55,
                     child: TextField(
                       enabled: true,
                       //textAlign: TextAlign.center,
@@ -200,8 +176,8 @@ class SignForms extends StatelessWidget {
                             MaterialPageRoute(builder: (context) => AcademicYear()));
                       },
                       child: Container(
-                        width: SizeConfig.wp(15),
-                        height: SizeConfig.hp(7),
+                        width: 250,
+                        height: 55,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(32),
                           color: Color(0xffFF6768),
@@ -226,152 +202,6 @@ class SignForms extends StatelessWidget {
     );
   }
 }
-class SignFormsTablet extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      //crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Container(
-          width: SizeConfig.wp(30),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.baseline,
-            textBaseline: TextBaseline.alphabetic,
-            children: [
-              Row(
-                children: [
-                  FittedBox(
-                    fit: BoxFit.contain,
-                    child: Text(
-                      'Admin Login',
-                      overflow: TextOverflow.visible,
-                      maxLines: 1,
-                      softWrap: false,
-                      style: TextStyle(
-                          color: Color(0xffFF6768),
-                          fontSize:SizeConfig.textScaleFactor * 40,
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: 2),
-                    ),
-                  )
-                ],
-              ),
-              SizedBox(
-                height: SizeConfig.hp(5),
-              ),
-              Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(32.0),
-                  color: Color(0xffFFFFFF),
-                ),
-                child: SizedBox(
-                  height: SizeConfig.hp(5),
-                  child: TextField(
-                    //textAlign: TextAlign.center,
-                    enabled: true,
-                    decoration: InputDecoration(
-                      hintText: 'username',
-                      hintStyle: TextStyle(fontSize: 20),
-                      contentPadding: const EdgeInsets.only(
-                        left: 20,
-                        right: 20,
-                      ),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(32.0),
-                        borderSide: BorderSide.none,
-                      ),
-                    ),
-                    onChanged: (value) {},
-                  ),
-                ),
-              ),
-              SizedBox(
-                height:SizeConfig.hp(5),
-              ),
-              Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(32.0),
-                  color: Color(0xffFFFFFF),
-                ),
-                child: SizedBox(
-                  height: SizeConfig.hp(5),
-                  child: TextField(
-                    enabled: true,
-                    //textAlign: TextAlign.center,
-                    decoration: InputDecoration(
-                      hintText: 'password',
-                      hintStyle: TextStyle(fontSize: 20),
-                      contentPadding: const EdgeInsets.only(
-                        left: 20,
-                        right: 20,
-                      ),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(32.0),
-                        borderSide: BorderSide.none,
-                      ),
-                    ),
-                    onChanged: (value) {},
-                  ),
-                ),
-              ),
-              SizedBox(height: SizeConfig.hp(5)),
-              Row(
-                children: [
-                  Spacer(),
-                  InkWell(
-                    hoverColor: Color(0xffFF6768),
-                    onTap: () {},
-                    child: Text(
-                      'Forget password?',
-                      textAlign: TextAlign.end,
-                      style: TextStyle(
-                          color: Color(0xffFFFFFF),
-                          letterSpacing: .2,
-                          fontSize: 15,
-                          fontWeight: FontWeight.bold,
-                          decoration: TextDecoration.underline),
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(
-                height: SizeConfig.hp(5),
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  InkWell(
-                    onTap: () {
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (context) => AcademicYear()));
-                    },
-                    child: Container(
-                      width: SizeConfig.wp(15),
-                      height: SizeConfig.hp(5),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(32),
-                        color: Color(0xffFF6768),
-                      ),
-                      alignment: Alignment.center,
-                      child: Text(
-                        'Login',
-                        style: TextStyle(
-                            color: Color(0xffffffff),
-                            fontSize: 25,
-                            fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                  ),
-                ],
-              )
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-}
 
 class Logo extends StatelessWidget {
   @override
@@ -391,20 +221,3 @@ class Logo extends StatelessWidget {
   }
 }
 
-class LogoTablet extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Container(
-          //margin:const EdgeInsets.symmetric(horizontal: 50),
-          child: Image.asset(AppImages.appLogo),
-          width:SizeConfig.wp(25),
-          height:SizeConfig.hp(25),
-        ),
-      ],
-    );;
-  }
-}

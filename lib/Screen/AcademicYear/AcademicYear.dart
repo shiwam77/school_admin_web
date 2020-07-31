@@ -3,7 +3,8 @@ import 'dart:math';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:school_admin_web/Model/AcademicYear.dart';
-import 'package:school_admin_web/Screen/DashBoard/DashBoard.dart';
+import 'package:school_admin_web/Screen/MasterDetailScreen/DashBoard.dart';
+
 import 'package:school_admin_web/Widget/CenterView.dart';
 
 import '../../Color.dart';
