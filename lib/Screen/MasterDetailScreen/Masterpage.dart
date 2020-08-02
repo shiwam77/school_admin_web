@@ -1,8 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:school_admin_web/Model/MasterNavigator.dart';
 
 import '../../Color.dart';
+import 'NavModel_vm.dart';
 
 class MasterPage extends StatefulWidget {
   @override
@@ -12,7 +14,7 @@ class MasterPage extends StatefulWidget {
 class _MasterPageState extends State<MasterPage> {
   NavTile navItems = NavTile();
   double maxWidth = 260;
-  int currentSelectedIndex;
+  int currentSelectedIndex =0;
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -76,29 +78,34 @@ class _MasterPageState extends State<MasterPage> {
   }
 
   Widget masterItem(int index) {
-    return InkWell(
-      onTap: () {
-        setState(() {
-          currentSelectedIndex = index;
-        });
+    return Consumer<NavIndex>(
+      builder: (context,navIndex,child){
+        return InkWell(
+          onTap: () {
+            setState(() {
+              currentSelectedIndex = index;
+              navIndex.changeIndex(index);
+            });
+          },
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 10),
+            child: Container(
+              height: 30,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(16),
+                color: currentSelectedIndex == index
+                    ? Color(0xff17223B)
+                    : Color(0xff263859),
+              ),
+              alignment: Alignment.center,
+              child: Text(
+                navItems.navigationItems[index].title,
+                style: TextStyle(color: AppColors.white, fontSize: 15),
+              ),
+            ),
+          ),
+        );
       },
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 10),
-        child: Container(
-          height: 30,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(16),
-            color: currentSelectedIndex == index
-                ? Color(0xff17223B)
-                : Color(0xff263859),
-          ),
-          alignment: Alignment.center,
-          child: Text(
-            navItems.navigationItems[index].title,
-            style: TextStyle(color: AppColors.white, fontSize: 15),
-          ),
-        ),
-      ),
     );
   }
 }

@@ -14,6 +14,8 @@ class NavTile {
     NavigationModel(title: "Add Student", icon: Icons.people_outline),
     NavigationModel(title: "Home Task", icon: Icons.library_books),
     NavigationModel(title: "Attendance", icon: Icons.present_to_all),
+    NavigationModel(title: "Exam Schedule", icon: Icons.picture_as_pdf),
+    NavigationModel(title: "Time Table", icon: Icons.picture_as_pdf),
     NavigationModel(title: "Tutor", icon: Icons.picture_as_pdf),
     NavigationModel(title: "Notifications", icon: Icons.notifications),
     NavigationModel(title: "Account", icon: Icons.account_balance_wallet),

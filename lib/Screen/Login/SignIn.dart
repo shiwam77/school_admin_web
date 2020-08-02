@@ -212,7 +212,9 @@ class Logo extends StatelessWidget {
       children: [
         Container(
           //margin:const EdgeInsets.symmetric(horizontal: 50),
-          child: Image.asset(AppImages.appLogo),
+          child: Hero(
+              tag: 'logo',
+              child: Image.asset(AppImages.appLogo)),
           width:SizeConfig.wp(35),
           height:SizeConfig.hp(50),
         ),

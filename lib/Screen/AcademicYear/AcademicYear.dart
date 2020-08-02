@@ -46,7 +46,9 @@ class _AcademicYearState extends State<AcademicYear> {
                     children: [
                       Container(
                         //margin:const EdgeInsets.symmetric(horizontal: 50),
-                        child: Image.asset(AppImages.appLogo),
+                        child: Hero(
+                            tag: 'logo',
+                            child: Image.asset(AppImages.appLogo)),
                         width: SizeConfig.wp(20),
                         height:SizeConfig.hp(20)
                       ),
