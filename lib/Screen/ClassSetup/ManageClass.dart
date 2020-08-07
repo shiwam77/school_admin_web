@@ -1,8 +1,16 @@
+import  'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-
+import 'package:provider/provider.dart';
+import 'package:school_admin_web/Screen/AcademicYear/AcademicYearChangeNotifier.dart';
+import 'package:school_admin_web/Screen/ClassSetup/Model/SubjectModel.dart';
 import '../../Color.dart';
 import '../../Responsive.dart';
 import 'package:popup_box/popup_box.dart';
+
+import 'Model/ClassModel.dart';
+import 'Notifier/ClassIdNotifier.dart';
+import 'ViewModel/classCRUD.dart';
+import 'ViewModel/subjectCRUD.dart';
 class Gender {
   String id;
   String gender;
@@ -21,9 +29,16 @@ class ManageClass extends StatefulWidget {
 }
 
 class _ManageClassState extends State<ManageClass> {
-
+  List<ClassModel> classList;
+  List<SubjectModel> subjectList;
+  int currentSelectedIndex;
   @override
   Widget build(BuildContext context) {
+    final classProvider = Provider.of<ClassViewModel >(context,listen: true);
+    final academicId  = Provider.of<YearNotifier>(context,listen: true);
+    final subjectProvider = Provider.of<SubjectViewModel >(context,listen: true);
+    final classIdProvider = Provider.of<ClassNotifier>(context,listen: true);
+    print(classIdProvider.getClassId());
     return Expanded(
         child: Container(
             width: double.infinity,
@@ -49,21 +64,49 @@ class _ManageClassState extends State<ManageClass> {
               SizedBox(
                 height: SizeConfig.hp(5),
                 width:SizeConfig.wp(60),
-                child: ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: 10,
-                    itemBuilder: (context,index){
-                      return Container(
-                        margin: const EdgeInsets.symmetric(horizontal: 10),
-                        height:SizeConfig.hp(5),
-                          alignment: Alignment.center,
-                          width: 100,
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(15),
-                            color:AppColors.redAccent,
-                        ),
-                          child:Text('Class One'),);
-                    }),
+                child: StreamBuilder(
+                  stream:classProvider.fetchClassAsStream(),
+                    builder: (context, AsyncSnapshot<QuerySnapshot> snapshot){
+                    if(snapshot.hasData){
+                      classList = snapshot.data.documents.map((e) =>
+                          ClassModel.fromMap(e.data, e.documentID))
+                          .where((element) => element.academicYearId == academicId.getYearId()).toList();
+                      return ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          itemCount: classList.length,
+                          itemBuilder: (context,index){
+                            return Consumer<ClassNotifier>(
+                              builder: (context,classIdNotify,child){
+                                return InkWell(
+                                  onTap: (){
+                                    setState(() {
+                                      currentSelectedIndex = index;
+                                      classIdNotify.changeClassID(classList[index].id);
+                                    });
+                                  },
+                                  child: Container(
+                                    margin: const EdgeInsets.symmetric(horizontal: 10),
+                                    height:SizeConfig.hp(5),
+                                    alignment: Alignment.center,
+                                    width: 100,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(15),
+                                      color:currentSelectedIndex == index ?AppColors.redAccent:AppColors.white,
+                                    ),
+                                    child:Text(classList[index].classes),),
+                                );
+                              },
+
+                            );
+                          },
+                      );
+                    }
+                      else{
+                        return Center(child: Text('Fetching..',style: TextStyle(color: AppColors.loginBackgroundColor),));
+                    }
+                    }
+
+                ),
               ),
               SizedBox(height: SizeConfig.hp(2),),
              Expanded(
@@ -76,57 +119,79 @@ class _ManageClassState extends State<ManageClass> {
                         child: Padding(
                           padding: EdgeInsets.only(left: SizeConfig.wp(5),right: SizeConfig.wp(3)),
                           child: classFeaturesScreen(title: 'Subject',
-                            child: ListView.builder(
-                              itemCount: 10,
-                              itemBuilder: (context,index){
-                                return Container(
-                                  margin: EdgeInsets.symmetric(horizontal: 40),
-                                  width: double.infinity,
-                                  height: 50,
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    crossAxisAlignment: CrossAxisAlignment.center,
-                                    children: [
-                                      Container(
-                                        height: 10,
-                                        width: 10,
-                                        decoration: BoxDecoration(
-                                            borderRadius: BorderRadius.circular(8),
-                                            color: AppColors.redAccent
-                                        ),
-                                      ),
-                                      SizedBox(width:20,),
-                                      Text('Subject ${index + 1}',style: TextStyle(color: Color(0xff263859),fontSize: SizeConfig.textScaleFactor * 15),),
-                                      Spacer(),
-                                      Container(
-                                        height: 20,
-                                        width: 35,
-                                        alignment: Alignment.center,
-                                        decoration: BoxDecoration(
-                                            borderRadius: BorderRadius.circular(10),
-                                            color: AppColors.redAccent
-                                        ),
-                                        child: Text('Edit',style: TextStyle(color: AppColors.white,fontSize: 10),),
-                                      ),
-                                      SizedBox(width:20,),
-                                      Container(
-                                        height: 20,
-                                        width: 40,
-                                        alignment: Alignment.center,
-                                        decoration: BoxDecoration(
-                                            borderRadius: BorderRadius.circular(10),
-                                            color: AppColors.redAccent
-                                        ),
-                                        child: Text('Delete',style: TextStyle(color: AppColors.white,fontSize: 10),),
-                                      ),
-                                    ],
-                                  ),
-                                );
-                              }),
-                          onTapAddIcon: (){
-                            print('hi');
+                            child: StreamBuilder(
+                              stream: subjectProvider.fetchSubjectAsStream(),
+                              builder:  (context, AsyncSnapshot<QuerySnapshot> snapshot){
+                                if(snapshot.hasData){
+                                  subjectList = snapshot.data.documents.map((e) =>
+                                      SubjectModel.fromMap(e.data, e.documentID))
+                                      .where((element) =>element.academicId ==academicId.getYearId() && element.classId == classIdProvider.getClassId()).toList();
+                                  return ListView.builder(
+                                      itemCount:subjectList.length,
+                                      itemBuilder: (context,index){
+                                        return Container(
+                                          margin: EdgeInsets.symmetric(horizontal: 40),
+                                          width: double.infinity,
+                                          height: 50,
+                                          child: Row(
+                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                            crossAxisAlignment: CrossAxisAlignment.center,
+                                            children: [
+                                              Container(
+                                                height: 10,
+                                                width: 10,
+                                                decoration: BoxDecoration(
+                                                    borderRadius: BorderRadius.circular(8),
+                                                    color: AppColors.redAccent
+                                                ),
+                                              ),
+                                              SizedBox(width:20,),
+                                              Text(subjectList[index].subject,style: TextStyle(color: Color(0xff263859),fontSize: SizeConfig.textScaleFactor * 15),),
+                                              Spacer(),
+                                              Container(
+                                                height: 20,
+                                                width: 35,
+                                                alignment: Alignment.center,
+                                                decoration: BoxDecoration(
+                                                    borderRadius: BorderRadius.circular(10),
+                                                    color: AppColors.redAccent
+                                                ),
+                                                child: Text('Edit',style: TextStyle(color: AppColors.white,fontSize: 10),),
+                                              ),
+                                              SizedBox(width:20,),
+                                              Container(
+                                                height: 20,
+                                                width: 40,
+                                                alignment: Alignment.center,
+                                                decoration: BoxDecoration(
+                                                    borderRadius: BorderRadius.circular(10),
+                                                    color: AppColors.redAccent
+                                                ),
+                                                child: InkWell(
+                                                  onTap: (){
+                                                    subjectProvider.removeSubject(subjectList[index].id);
+                                                  },
+                                                    child: Text('Delete',style: TextStyle(color: AppColors.white,fontSize: 10),)),
+                                              ),
+                                            ],
+                                          ),
+                                        );
+                                      });
+                                }
+                                else{
+                                  return SizedBox();
+                                }
 
-                          }),
+                              },
+                            ),
+                          onTapAddIcon: () async{
+                          await  PopupBox.showPopupBox(
+                              context: context,
+                              button: SizedBox(),
+                              willDisplayWidget: AddSubjectInput(),
+                            );
+                          }
+                          ),
                         ),
                       ),
                       Expanded(
@@ -226,6 +291,11 @@ class _ManageClassState extends State<ManageClass> {
     );
    }
    Widget addClassWidget(){
+
+    String classes;
+    final academicId  = Provider.of<YearNotifier>(context,listen: true);
+    final classProvider = Provider.of<ClassViewModel >(context,listen: true);
+    TextEditingController textEditingController = TextEditingController();
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -253,7 +323,8 @@ class _ManageClassState extends State<ManageClass> {
           child: SizedBox(
             height: SizeConfig.hp(6),
             child: TextField(
-              cursorColor: AppColors.white,
+              controller: textEditingController,
+              cursorColor: AppColors.loginBackgroundColor,
               style: TextStyle(
                 fontSize: 18,
                 letterSpacing: .2,
@@ -266,24 +337,30 @@ class _ManageClassState extends State<ManageClass> {
                   fontSize: 15,
                   letterSpacing: .2,
                 ),
-                contentPadding: const EdgeInsets.only(
-                  left: 20,
-                  right: 20,
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 5,
                 ),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(32.0),
                   borderSide: BorderSide.none,
                 ),
               ),
-              onChanged: (value) {},
-              onSubmitted: (value) {},
+              onChanged: (value) {
+                classes = value;
+              },
+
             ),
           ),
         ),
         SizedBox(width:SizeConfig.wp(2)),
         InkWell(
           onTap: () {
-
+            if(classes.isNotEmpty){
+              classProvider.addClass(ClassModel(classes: classes,academicYearId:academicId.getYearId()));
+              textEditingController.clear();
+              classes ='';
+            }
           },
           child: Container(
               width: SizeConfig.wp(7),
@@ -572,5 +649,74 @@ class _AddStudentInputState extends State<AddStudentInput> {
       ));
     }
     return items;
+  }
+}
+
+class AddSubjectInput extends StatefulWidget {
+  @override
+  _AddSubjectInputState createState() => _AddSubjectInputState();
+}
+
+class _AddSubjectInputState extends State<AddSubjectInput> {
+  TextEditingController _textEditingController = TextEditingController();
+  String subject;
+  @override
+  Widget build(BuildContext context) {
+    final subjectProvider = Provider.of<SubjectViewModel >(context,listen: true);
+    final classIdProvider = Provider.of<ClassNotifier>(context,listen: true);
+    final academicId  = Provider.of<YearNotifier>(context,listen: true);
+    return Column(
+      children: [
+        Container(
+          child:SizedBox(
+            width:SizeConfig.wp(20),
+            height: 47,
+            child: TextField(
+              controller: _textEditingController,
+              style: TextStyle(
+                  color: Color(0xff263859),
+                  fontSize: SizeConfig.textScaleFactor * 35,
+                  fontWeight: FontWeight.bold),
+              onChanged: (value){
+                setState(() {
+                  subject = value;
+                });
+                print(subject);
+              },
+              decoration: InputDecoration(
+                  hintText: 'Enter Student Name',
+                  hintStyle: TextStyle(
+                      fontSize: SizeConfig.textScaleFactor * 20,
+                      fontWeight: FontWeight.w500),
+                  contentPadding: EdgeInsets.symmetric(vertical: 5),
+                  border: InputBorder.none
+              ),),
+          ),
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            MaterialButton(
+              color:AppColors.redAccent,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Text(
+                'Save',
+                style: TextStyle(fontSize: SizeConfig.textScaleFactor * 15),
+              ),
+              onPressed: () {
+                if(subject.isNotEmpty){
+                  subjectProvider.addSubject(SubjectModel(subject:subject,academicId: academicId.getYearId(),classId:classIdProvider.getClassId()));
+                  subject ='';
+                  _textEditingController.clear();
+                }
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        ),
+      ],
+    );
   }
 }

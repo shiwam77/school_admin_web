@@ -6,8 +6,7 @@ GetIt academicLocator =GetIt.instance;
 GetIt classLocator =GetIt.instance;
 
 void setupLocator() {
- // academicLocator.registerLazySingleton(() => Api('AcademicYear'));
-  academicLocator.registerLazySingleton(() => AcademicYearViewModel()) ;
-  academicLocator.registerLazySingleton(() => Api('Class'));
+  academicLocator.registerLazySingleton(() => Api('AcademicYear'));
+  academicLocator.registerLazySingleton(() => AcademicYearViewModel());
 }
 
