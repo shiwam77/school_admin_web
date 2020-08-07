@@ -21,6 +21,13 @@
   <!-- This script installs service_worker.js to provide PWA functionality to
        application. For more information, see:
        https://developers.google.com/web/fundamentals/primers/service-workers -->
+  <!-- The core Firebase JS SDK is always required and must be listed first -->
+  <script src="https://www.gstatic.com/firebasejs/7.5.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/7.5.0/firebase-firestore.js"></script>
+
+  <!-- TODO: Add SDKs for Firebase products that you want to use
+       https://firebase.google.com/docs/web/setup#available-libraries -->
+
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function () {
@@ -28,6 +35,20 @@
       });
     }
   </script>
+  <script>
+  // Your web app's Firebase configuration
+  var firebaseConfig = {
+    apiKey: "AIzaSyBUhSo-wZs3ZZZU8cSdj4ZhXJctHIeGrRc",
+    authDomain: "schoolweb-5496b.firebaseapp.com",
+    databaseURL: "https://schoolweb-5496b.firebaseio.com",
+    projectId: "schoolweb-5496b",
+    storageBucket: "schoolweb-5496b.appspot.com",
+    messagingSenderId: "616197245177",
+    appId: "1:616197245177:web:f804ddf07c7aed311bfa28"
+  };
+  // Initialize Firebase
+  firebase.initializeApp(firebaseConfig);
+</script>
   <script src="main.dart.js" type="application/javascript"></script>
 </body>
 </html>

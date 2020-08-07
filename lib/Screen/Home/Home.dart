@@ -1,8 +1,13 @@
 import 'package:charts_flutter/flutter.dart' as charts;
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:school_admin_web/Color.dart';
 import 'package:school_admin_web/Responsive.dart';
+import 'package:school_admin_web/Screen/AcademicYear/AcademicYearChangeNotifier.dart';
+import 'package:school_admin_web/Screen/AcademicYear/Model/AcademicYearModel.dart';
+import 'package:school_admin_web/Screen/AcademicYear/ViewModel/CrudViewModel.dart';
 
 import 'GenderRatioBarChart.dart';
 import 'TimeSeriesChart.dart';
@@ -14,8 +19,11 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   GetTracker getmetrics = GetTracker();
+
   @override
   Widget build(BuildContext context) {
+
+
     return Expanded(
       child: Container(
         width: double.infinity,
@@ -216,7 +224,9 @@ class _HomeState extends State<Home> {
   }
 
   Widget academicYearMetrics() {
-    return Container(
+    final academicYearProvider = Provider.of<AcademicYearViewModel>(context,listen: false);
+    final academicId  = Provider.of<YearNotifier>(context,listen: true);
+     return Container(
       height: 80,
       width: 175,
       decoration: BoxDecoration(
@@ -245,13 +255,27 @@ class _HomeState extends State<Home> {
                   fontSize: 15,
                   fontWeight: FontWeight.bold),
             ),
-            Text(
-              '2021',
-              style: TextStyle(
-                  color: Color(0xff263859),
-                  fontSize: 30,
-                  fontWeight: FontWeight.bold),
-            )
+            FutureBuilder(
+              future: academicYearProvider.getYearById(academicId.getYearId()),
+               builder: (context,AsyncSnapshot<AcademicModel> snapshot){
+               if(snapshot.hasData){
+                 return Text(
+                   snapshot.data.year,
+                   style: TextStyle(
+                       color: Color(0xff263859),
+                       fontSize: 30,
+                       fontWeight: FontWeight.bold),
+                 );
+               }
+               else return Text(
+                 'Loading.',
+                 style: TextStyle(
+                     color: Color(0xff263859),
+                     fontSize: 30,
+                     fontWeight: FontWeight.bold),
+               );
+               },
+            ),
           ],
         ),
       ),
