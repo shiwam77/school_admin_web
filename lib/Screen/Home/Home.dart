@@ -1,5 +1,5 @@
 import 'package:charts_flutter/flutter.dart' as charts;
-import 'package:cloud_firestore/cloud_firestore.dart';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -8,6 +8,7 @@ import 'package:school_admin_web/Responsive.dart';
 import 'package:school_admin_web/Screen/AcademicYear/AcademicYearChangeNotifier.dart';
 import 'package:school_admin_web/Screen/AcademicYear/Model/AcademicYearModel.dart';
 import 'package:school_admin_web/Screen/AcademicYear/ViewModel/CrudViewModel.dart';
+import 'package:shimmer/shimmer.dart';
 
 import 'GenderRatioBarChart.dart';
 import 'TimeSeriesChart.dart';
@@ -620,4 +621,11 @@ List<String> metrics() {
     absent.add("60");
   }
   return absent;
+}
+Widget getShimmerWidget(Widget targetWidget) {
+  return Shimmer.fromColors(
+    baseColor: AppColors.textColorLight.withOpacity(0.1),
+    highlightColor: AppColors.textColorLight.withOpacity(0.2),
+    child: targetWidget,
+  );
 }

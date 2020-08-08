@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:school_admin_web/Model/MasterNavigator.dart';
+import 'package:school_admin_web/Screen/ClassSetup/Notifier/ClassIdNotifier.dart';
 
 import '../../Color.dart';
 import 'NavModel_vm.dart';
@@ -12,6 +13,7 @@ class MasterPage extends StatefulWidget {
 }
 
 class _MasterPageState extends State<MasterPage> {
+
   NavTile navItems = NavTile();
   double maxWidth = 260;
   int currentSelectedIndex =0;
@@ -85,6 +87,8 @@ class _MasterPageState extends State<MasterPage> {
             setState(() {
               currentSelectedIndex = index;
               navIndex.changeIndex(index);
+              final classIdProvider = Provider.of<ClassNotifier>(context,listen: false);
+              classIdProvider.changeClassID(null);
             });
           },
           child: Padding(

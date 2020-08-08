@@ -1,8 +1,13 @@
+import 'dart:typed_data';
+
 import  'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:school_admin_web/Screen/AcademicYear/AcademicYearChangeNotifier.dart';
+import 'package:school_admin_web/Screen/ClassSetup/Model/StudentModel.dart';
 import 'package:school_admin_web/Screen/ClassSetup/Model/SubjectModel.dart';
+import 'package:school_admin_web/Screen/ClassSetup/ViewModel/StudentCRUD.dart';
+
 import '../../Color.dart';
 import '../../Responsive.dart';
 import 'package:popup_box/popup_box.dart';
@@ -11,6 +16,8 @@ import 'Model/ClassModel.dart';
 import 'Notifier/ClassIdNotifier.dart';
 import 'ViewModel/classCRUD.dart';
 import 'ViewModel/subjectCRUD.dart';
+
+import 'package:image_picker_web/image_picker_web.dart';
 class Gender {
   String id;
   String gender;
@@ -32,13 +39,16 @@ class _ManageClassState extends State<ManageClass> {
   List<ClassModel> classList;
   List<SubjectModel> subjectList;
   int currentSelectedIndex;
+  List<StudentModel> studentList;
+
   @override
   Widget build(BuildContext context) {
     final classProvider = Provider.of<ClassViewModel >(context,listen: true);
     final academicId  = Provider.of<YearNotifier>(context,listen: true);
     final subjectProvider = Provider.of<SubjectViewModel >(context,listen: true);
     final classIdProvider = Provider.of<ClassNotifier>(context,listen: true);
-    print(classIdProvider.getClassId());
+    final studentProvider = Provider.of<StudentViewModel>(context,listen: true);
+
     return Expanded(
         child: Container(
             width: double.infinity,
@@ -109,157 +119,178 @@ class _ManageClassState extends State<ManageClass> {
                 ),
               ),
               SizedBox(height: SizeConfig.hp(2),),
-             Expanded(
-              child: ListView(
-                children: [
-                  Row(
-                    mainAxisAlignment:MainAxisAlignment.spaceAround,
-                    children: [
-                      Expanded(
-                        child: Padding(
-                          padding: EdgeInsets.only(left: SizeConfig.wp(5),right: SizeConfig.wp(3)),
-                          child: classFeaturesScreen(title: 'Subject',
-                            child: StreamBuilder(
-                              stream: subjectProvider.fetchSubjectAsStream(),
-                              builder:  (context, AsyncSnapshot<QuerySnapshot> snapshot){
-                                if(snapshot.hasData){
-                                  subjectList = snapshot.data.documents.map((e) =>
-                                      SubjectModel.fromMap(e.data, e.documentID))
-                                      .where((element) =>element.academicId ==academicId.getYearId() && element.classId == classIdProvider.getClassId()).toList();
-                                  return ListView.builder(
-                                      itemCount:subjectList.length,
-                                      itemBuilder: (context,index){
-                                        return Container(
-                                          margin: EdgeInsets.symmetric(horizontal: 40),
-                                          width: double.infinity,
-                                          height: 50,
-                                          child: Row(
-                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                            crossAxisAlignment: CrossAxisAlignment.center,
-                                            children: [
-                                              Container(
-                                                height: 10,
-                                                width: 10,
-                                                decoration: BoxDecoration(
-                                                    borderRadius: BorderRadius.circular(8),
-                                                    color: AppColors.redAccent
-                                                ),
+              classIdProvider.getClassId() != null?Expanded(
+                child: ListView(
+                  children: [
+                    Row(
+                      mainAxisAlignment:MainAxisAlignment.spaceAround,
+                      children: [
+                        Expanded(
+                          child: Padding(
+                            padding: EdgeInsets.only(left: SizeConfig.wp(5),right: SizeConfig.wp(3)),
+                            child: classFeaturesScreen(title: 'Subject',
+                                child: StreamBuilder(
+                                  stream: subjectProvider.fetchSubjectAsStream(),
+                                  builder:  (context, AsyncSnapshot<QuerySnapshot> snapshot){
+                                    if(snapshot.hasData){
+                                      subjectList = snapshot.data.documents.map((e) =>
+                                          SubjectModel.fromMap(e.data, e.documentID))
+                                          .where((element) =>element.academicId ==academicId.getYearId() && element.classId == classIdProvider.getClassId()).toList();
+                                      return ListView.builder(
+                                          itemCount:subjectList.length,
+                                          itemBuilder: (context,index){
+                                            return Container(
+                                              margin: EdgeInsets.symmetric(horizontal: 40),
+                                              width: double.infinity,
+                                              height: 50,
+                                              child: Row(
+                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                crossAxisAlignment: CrossAxisAlignment.center,
+                                                children: [
+                                                  Container(
+                                                    height: 10,
+                                                    width: 10,
+                                                    decoration: BoxDecoration(
+                                                        borderRadius: BorderRadius.circular(8),
+                                                        color: AppColors.redAccent
+                                                    ),
+                                                  ),
+                                                  SizedBox(width:20,),
+                                                  Text(subjectList[index].subject,style: TextStyle(color: Color(0xff263859),fontSize: SizeConfig.textScaleFactor * 15),),
+                                                  Spacer(),
+                                                  Container(
+                                                    height: 20,
+                                                    width: 35,
+                                                    alignment: Alignment.center,
+                                                    decoration: BoxDecoration(
+                                                        borderRadius: BorderRadius.circular(10),
+                                                        color: AppColors.redAccent
+                                                    ),
+                                                    child: Text('Edit',style: TextStyle(color: AppColors.white,fontSize: 10),),
+                                                  ),
+                                                  SizedBox(width:20,),
+                                                  Container(
+                                                    height: 20,
+                                                    width: 40,
+                                                    alignment: Alignment.center,
+                                                    decoration: BoxDecoration(
+                                                        borderRadius: BorderRadius.circular(10),
+                                                        color: AppColors.redAccent
+                                                    ),
+                                                    child: InkWell(
+                                                        onTap: (){
+                                                          subjectProvider.removeSubject(subjectList[index].id);
+                                                        },
+                                                        child: Text('Delete',style: TextStyle(color: AppColors.white,fontSize: 10),)),
+                                                  ),
+                                                ],
                                               ),
-                                              SizedBox(width:20,),
-                                              Text(subjectList[index].subject,style: TextStyle(color: Color(0xff263859),fontSize: SizeConfig.textScaleFactor * 15),),
-                                              Spacer(),
-                                              Container(
-                                                height: 20,
-                                                width: 35,
-                                                alignment: Alignment.center,
-                                                decoration: BoxDecoration(
-                                                    borderRadius: BorderRadius.circular(10),
-                                                    color: AppColors.redAccent
-                                                ),
-                                                child: Text('Edit',style: TextStyle(color: AppColors.white,fontSize: 10),),
-                                              ),
-                                              SizedBox(width:20,),
-                                              Container(
-                                                height: 20,
-                                                width: 40,
-                                                alignment: Alignment.center,
-                                                decoration: BoxDecoration(
-                                                    borderRadius: BorderRadius.circular(10),
-                                                    color: AppColors.redAccent
-                                                ),
-                                                child: InkWell(
-                                                  onTap: (){
-                                                    subjectProvider.removeSubject(subjectList[index].id);
-                                                  },
-                                                    child: Text('Delete',style: TextStyle(color: AppColors.white,fontSize: 10),)),
-                                              ),
-                                            ],
-                                          ),
-                                        );
-                                      });
-                                }
-                                else{
-                                  return SizedBox();
-                                }
+                                            );
+                                          });
+                                    }
+                                    else{
+                                      return SizedBox();
+                                    }
 
-                              },
+                                  },
+                                ),
+                                onTapAddIcon: () async{
+                                  await  PopupBox.showPopupBox(
+                                    context: context,
+                                    button: SizedBox(),
+                                    willDisplayWidget: AddSubjectInput(),
+                                  );
+                                }
                             ),
-                          onTapAddIcon: () async{
-                          await  PopupBox.showPopupBox(
-                              context: context,
-                              button: SizedBox(),
-                              willDisplayWidget: AddSubjectInput(),
-                            );
-                          }
                           ),
                         ),
-                      ),
-                      Expanded(
-                        child: Padding(
-                          padding: EdgeInsets.only(left: SizeConfig.wp(3),right: SizeConfig.wp(5)),
-                          child: classFeaturesScreen(title: 'Student',
-                            child:ListView.builder(
-                              itemCount: 10,
-                              itemBuilder: (context,index){
-                                return Container(
-                                  margin: EdgeInsets.symmetric(horizontal: 40),
-                                  width: double.infinity,
-                                  height: 50,
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    crossAxisAlignment: CrossAxisAlignment.center,
-                                    children: [
-                                      Container(
-                                        height: 10,
-                                        width: 10,
-                                        decoration: BoxDecoration(
-                                            borderRadius: BorderRadius.circular(8),
-                                            color: AppColors.redAccent
-                                        ),
-                                      ),
-                                      SizedBox(width:20,),
-                                      Text('Shiwam ${index + 1}',style: TextStyle(color: Color(0xff263859),fontSize: SizeConfig.textScaleFactor * 15),),
-                                      Spacer(),
-                                      Container(
-                                        height: 20,
-                                        width: 35,
-                                        alignment: Alignment.center,
-                                        decoration: BoxDecoration(
-                                            borderRadius: BorderRadius.circular(10),
-                                            color: AppColors.redAccent
-                                        ),
-                                        child: Text('Edit',style: TextStyle(color: AppColors.white,fontSize: 10),),
-                                      ),
-                                      SizedBox(width:20,),
-                                      Container(
-                                        height: 20,
-                                        width: 40,
-                                        alignment: Alignment.center,
-                                        decoration: BoxDecoration(
-                                            borderRadius: BorderRadius.circular(10),
-                                            color: AppColors.redAccent
-                                        ),
-                                        child: Text('Delete',style: TextStyle(color: AppColors.white,fontSize: 10),),
-                                      ),
-                                    ],
-                                  ),
-                                );
-                              }),
-                            onTapAddIcon: ()  {
-                              popUpWindows(
-                                child:AddStudentInput(),
+                        Expanded(
+                          child: Padding(
+                            padding: EdgeInsets.only(left: SizeConfig.wp(3),right: SizeConfig.wp(5)),
+                            child: classFeaturesScreen(title: 'Student',
+                                child:StreamBuilder(
+                                  stream: studentProvider.fetchStudentAsStream(),
+                                  builder: (context,AsyncSnapshot<QuerySnapshot> snapshot){
+                                    if(snapshot.hasData){
+                                      studentList = snapshot.data.documents.map((e) =>
+                                          StudentModel.fromMap(e.data, e.documentID))
+                                          .where((element) =>element.academicId ==academicId.getYearId() && element.classId == classIdProvider.getClassId()).toList();
+                                      return ListView.builder(
+                                          itemCount: studentList.length,
+                                          itemBuilder: (context,index){
+                                            return Container(
+                                              margin: EdgeInsets.symmetric(horizontal: 40),
+                                              width: double.infinity,
+                                              height: 50,
+                                              child: Row(
+                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                crossAxisAlignment: CrossAxisAlignment.center,
+                                                children: [
+                                                  Container(
+                                                    height: 10,
+                                                    width: 10,
+                                                    decoration: BoxDecoration(
+                                                        borderRadius: BorderRadius.circular(8),
+                                                        color: AppColors.redAccent
+                                                    ),
+                                                  ),
+                                                  SizedBox(width:20,),
+                                                  Text(studentList[index].studentName,style: TextStyle(color: Color(0xff263859),fontSize: SizeConfig.textScaleFactor * 15),),
+                                                  Spacer(),
+                                                  Container(
+                                                    height: 20,
+                                                    width: 35,
+                                                    alignment: Alignment.center,
+                                                    decoration: BoxDecoration(
+                                                        borderRadius: BorderRadius.circular(10),
+                                                        color: AppColors.redAccent
+                                                    ),
+                                                    child: InkWell(
+                                                        onTap: (){
 
-                              );
+                                                        },
+                                                        child: Text('Edit',style: TextStyle(color: AppColors.white,fontSize: 10),)),
 
-                            }
+                                                  ),
+                                                  SizedBox(width:20,),
+                                                  Container(
+                                                    height: 20,
+                                                    width: 40,
+                                                    alignment: Alignment.center,
+                                                    decoration: BoxDecoration(
+                                                        borderRadius: BorderRadius.circular(10),
+                                                        color: AppColors.redAccent
+                                                    ),
+                                                    child: InkWell(
+                                                        onTap: (){
+                                                          studentProvider.removeStudent(studentList[index].id);
+                                                        },
+                                                        child: Text('Delete',style: TextStyle(color: AppColors.white,fontSize: 10),)),
+                                                  ),
+                                                ],
+                                              ),
+                                            );
+                                          });
+                                    }
+                                    return SizedBox();
+                                  },
+                                ),
+                                onTapAddIcon: ()  {
+                                  popUpWindows(
+                                    child:AddStudentInput(),
+
+                                  );
+
+                                }
+                            ),
                           ),
                         ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
+                      ],
+                    ),
+                  ],
+                ),
+              ):SizedBox(),
+
           ],
         ),
         ));
@@ -450,20 +481,7 @@ class _ManageClassState extends State<ManageClass> {
   Future<Widget> popUpWindows({Widget child,Function onSave}) async{
     return await PopupBox.showPopupBox(
         context: context,
-        button: MaterialButton(
-          color:AppColors.redAccent,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: Text(
-            'Save',
-            style: TextStyle(fontSize: SizeConfig.textScaleFactor * 15),
-          ),
-          onPressed: () {
-            onSave;
-            Navigator.of(context).pop();
-          },
-        ),
+        button: SizedBox(),
         willDisplayWidget: child,
     );
   }
@@ -478,7 +496,23 @@ class AddStudentInput extends StatefulWidget {
 
 class _AddStudentInputState extends State<AddStudentInput> {
   List<DropdownMenuItem<Gender>> _dropdownMenuItems;
+  Image pickedImage;
+  Uint8List bytesFromPicker;
   Gender _selectedGender;
+  String id;
+  String academicId;
+  String classId;
+  String studentName;
+  String rollNo;
+  String fatherName;
+  String motherName;
+  String address;
+  String emailAddress;
+  String dateOfBirth;
+  String contact;
+  String gender;
+  String imageUrl;
+  String imagePath;
   @override
   void initState() {
     super.initState();
@@ -491,14 +525,40 @@ class _AddStudentInputState extends State<AddStudentInput> {
 
   @override
   Widget build(BuildContext context) {
+    final academicId  = Provider.of<YearNotifier>(context,listen: true);
+    final classIdProvider = Provider.of<ClassNotifier>(context,listen: true);
+    final studentProvider = Provider.of<StudentViewModel>(context,listen: true);
     return  Container(
       width: SizeConfig.screenWidth * .5,
       height: SizeConfig.screenHeight * .75,
-      child: Column(
+      child: ListView(
         children: [
-          CircleAvatar(
-            radius: SizeConfig.hp(10),
-            backgroundColor: AppColors.redAccent,
+          Tooltip(
+            message:bytesFromPicker == null ? 'Tap to insert image':'Tap to edit image',
+            margin: EdgeInsets.only(top: 50),
+            padding: EdgeInsets.all(4),
+            child: GestureDetector(
+              onTap:  pickImageAsByte,
+              child: Container(
+                  width: 190.0,
+                  height: 190.0,
+                  decoration: new BoxDecoration(
+                      shape: BoxShape.circle,
+
+                      ),
+                alignment: Alignment.center,
+                child:bytesFromPicker != null ? ClipRRect(
+                  borderRadius: BorderRadius.circular(80),
+                    child: Image.memory(
+                      bytesFromPicker,
+                      fit:BoxFit.fill,width: 170,height: 170,
+                      filterQuality: FilterQuality.high,
+                    )):Icon(
+                  Icons.account_circle,
+                  size: 210,
+                  color: AppColors.redAccent,),
+                  ),
+            ),
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -511,14 +571,9 @@ class _AddStudentInputState extends State<AddStudentInput> {
                       color: Color(0xff263859),
                       fontSize: SizeConfig.textScaleFactor * 35,
                       fontWeight: FontWeight.bold),
-                  onSubmitted: (value){
+                  onChanged: (value){
                     setState(() {
-
-                    });
-                  },
-                  onEditingComplete: (){
-                    setState(() {
-                      //subjTileText = false;
+                    studentName = value;
                     });
                   },
                   decoration: InputDecoration(
@@ -567,65 +622,137 @@ class _AddStudentInputState extends State<AddStudentInput> {
                 ),
               ),
             ],),
-          Container(
-            height: 50,
-            width: SizeConfig.screenWidth * .4,
-          ),
-          Container(
-
-            height: SizeConfig.screenHeight * .4,
-            width: SizeConfig.screenWidth * .4,
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(16),
-                color: AppColors.white,
-                boxShadow: [
-                  BoxShadow(
-                    color: Color(0xff707070).withOpacity(.4),
-                    offset: Offset(0, 0),
-                    blurRadius: 15,
-                  )
-                ]),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20,vertical: 5),
-                  child: ListView(
-                    children: [
-                      formInput(label: "Roll No",
-                          onChanged: (value){
-
-                          }),
-                      formInput(label: "Father's Name",
-                      onChanged: (value){
-
-                      }),
-                      formInput(label: "Mother's Name",
-                          onChanged: (value){
-
-                          }),
-                      formInput(label: "Address",
-                          onChanged: (value){
-
-                          }),
-                      formInput(label: "D.O.B",
-                          onChanged: (value){
-
-                          }),
-                      formInput(label: "Contact",
-                          onChanged: (value){
-
-                          }),
-                      formInput(label: "Email",
-                          onChanged: (value){
-
-                          }),
-                    ],
+         SizedBox(height: 20,),
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal:SizeConfig.wp(3) ),
+            child: Container(
+              height: SizeConfig.screenHeight * .4,
+              width: SizeConfig.screenWidth * .4,
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(16),
+                  color: AppColors.white,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Color(0xff707070).withOpacity(.4),
+                      offset: Offset(0, 0),
+                      blurRadius: 15,
+                    )
+                  ]),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20,vertical: 5),
+                    child: ListView(
+                      children: [
+                        formInput(label: "Roll No",
+                            onChanged: (value){
+                            setState(() {
+                              rollNo = value;
+                            });
+                            }),
+                        formInput(label: "Father's Name",
+                        onChanged: (value){
+                        setState(() {
+                          fatherName = value;
+                        });
+                        }),
+                        formInput(label: "Mother's Name",
+                            onChanged: (value){
+                              setState(() {
+                              motherName = value;
+                              });
+                            }),
+                        formInput(label: "Address",
+                            onChanged: (value){
+                            setState(() {
+                              address = value;
+                            });
+                            }),
+                        formInput(label: "D.O.B",
+                            hintText: "dd/mm/yyy",
+                            onChanged: (value){
+                            setState(() {
+                              dateOfBirth = value;
+                            });
+                            }),
+                        formInput(label: "Contact",
+                            onChanged: (value){
+                             setState(() {
+                               contact = value;
+                             });
+                            }),
+                        formInput(label: "Email",
+                            onChanged: (value){
+                            setState(() {
+                              emailAddress = value;
+                            });
+                            }),
+                      ],
+                    ),
                   ),
+            ),
+          ),
+          Padding(
+            padding: EdgeInsets.only(top: 10),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                MaterialButton(
+                  color:AppColors.redAccent,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Text(
+                    'Save',
+                    style: TextStyle(fontSize: SizeConfig.textScaleFactor * 15),
+                  ),
+                  onPressed: () {
+                     studentProvider.addStudent(StudentModel(
+                       academicId: academicId.getYearId(),
+                       classId: classIdProvider.getClassId(),
+                       studentName: studentName,
+                       rollNo: rollNo,
+                       fatherName: fatherName,
+                       motherName: motherName,
+                       dateOfBirth: dateOfBirth,
+                       address: address,
+                       contact: contact,
+                       emailAddress: emailAddress,
+                       gender: _selectedGender.gender,
+                       imagePath: '',
+                       imageUrl: '',
+                     ));
+                    Navigator.of(context).pop();
+                  },
                 ),
+            ],),
           )
         ],
       ),
     );
   }
-  Widget formInput({String label,Function onChanged}){
+
+  pickImage() async {
+    Image fromPicker = await ImagePickerWeb.getImage(outputType: ImageType.widget);
+
+    if (fromPicker != null) {
+      setState(() {
+        pickedImage = fromPicker;
+      });
+    }
+  }
+
+  pickImageAsByte() async {
+    Uint8List bytesPicker =
+    await ImagePickerWeb.getImage(outputType: ImageType.bytes);
+
+    if (bytesPicker != null) {
+      setState(() {
+        bytesFromPicker = bytesPicker;
+      });
+
+    }
+  }
+
+  Widget formInput({String label,Function onChanged,String hintText}){
     return  Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -634,6 +761,10 @@ class _AddStudentInputState extends State<AddStudentInput> {
           width: SizeConfig.wp(25),
           child: TextField(
             onChanged: onChanged,
+            textAlign: TextAlign.center,
+            decoration: InputDecoration(
+              hintText: hintText == null?'':hintText,
+            ),
           ),
         )
       ],
@@ -652,7 +783,12 @@ class _AddStudentInputState extends State<AddStudentInput> {
   }
 }
 
+
+
+
+
 class AddSubjectInput extends StatefulWidget {
+  AddSubjectInput({Key key}):super(key:key);
   @override
   _AddSubjectInputState createState() => _AddSubjectInputState();
 }
@@ -665,58 +801,64 @@ class _AddSubjectInputState extends State<AddSubjectInput> {
     final subjectProvider = Provider.of<SubjectViewModel >(context,listen: true);
     final classIdProvider = Provider.of<ClassNotifier>(context,listen: true);
     final academicId  = Provider.of<YearNotifier>(context,listen: true);
-    return Column(
-      children: [
-        Container(
-          child:SizedBox(
-            width:SizeConfig.wp(20),
-            height: 47,
-            child: TextField(
-              controller: _textEditingController,
-              style: TextStyle(
-                  color: Color(0xff263859),
-                  fontSize: SizeConfig.textScaleFactor * 35,
-                  fontWeight: FontWeight.bold),
-              onChanged: (value){
-                setState(() {
-                  subject = value;
-                });
-                print(subject);
-              },
-              decoration: InputDecoration(
-                  hintText: 'Enter Student Name',
-                  hintStyle: TextStyle(
-                      fontSize: SizeConfig.textScaleFactor * 20,
-                      fontWeight: FontWeight.w500),
-                  contentPadding: EdgeInsets.symmetric(vertical: 5),
-                  border: InputBorder.none
-              ),),
-          ),
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            MaterialButton(
-              color:AppColors.redAccent,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Text(
-                'Save',
-                style: TextStyle(fontSize: SizeConfig.textScaleFactor * 15),
-              ),
-              onPressed: () {
-                if(subject.isNotEmpty){
-                  subjectProvider.addSubject(SubjectModel(subject:subject,academicId: academicId.getYearId(),classId:classIdProvider.getClassId()));
-                  subject ='';
-                  _textEditingController.clear();
-                }
-                Navigator.of(context).pop();
-              },
+    return Consumer<ClassNotifier>(
+    builder: (context,classIdNotify,child){
+      return Column(
+        children: [
+          Container(
+            child:SizedBox(
+              width:SizeConfig.wp(20),
+              height: 47,
+              child: TextField(
+                controller: _textEditingController,
+                style: TextStyle(
+                    color: Color(0xff263859),
+                    fontSize: SizeConfig.textScaleFactor * 35,
+                    fontWeight: FontWeight.bold),
+                onChanged: (value){
+                  setState(() {
+                    subject = value;
+                  });
+                  print(subject);
+                },
+                decoration: InputDecoration(
+                    hintText: 'Enter Student Name',
+                    hintStyle: TextStyle(
+                        fontSize: SizeConfig.textScaleFactor * 20,
+                        fontWeight: FontWeight.w500),
+                    contentPadding: EdgeInsets.symmetric(vertical: 5),
+                    border: InputBorder.none
+                ),),
             ),
-          ],
-        ),
-      ],
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              MaterialButton(
+                color:AppColors.redAccent,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Text(
+                  'Save',
+                  style: TextStyle(fontSize: SizeConfig.textScaleFactor * 15),
+                ),
+                onPressed: () {
+                  if(subject.isNotEmpty){
+                    subjectProvider.addSubject(SubjectModel(subject:subject,academicId: academicId.getYearId(),classId:classIdNotify.getClassId()));
+                    subject ='';
+                    _textEditingController.clear();
+                  }
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          ),
+        ],
+      );
+    },
+
     );
   }
 }
+

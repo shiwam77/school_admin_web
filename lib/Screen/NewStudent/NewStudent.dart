@@ -37,39 +37,39 @@ class _NewStudentState extends State<NewStudent> {
               padding:  EdgeInsets.symmetric(horizontal: SizeConfig.wp(5)),
               child: ListView(
                 children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment:CrossAxisAlignment.center,
-                        children: [
-                          Container(
-                            width: SizeConfig.wp(50),
-                            alignment: Alignment.center,
-                            child: Text('DELHI INSTITUTE OF TECHNOLOGY AND MANAGEMENT ',
-                              softWrap: true,
-                              maxLines: 2,
-                              style: TextStyle(color: AppColors.redAccent,
-                                  fontSize: SizeConfig.textScaleFactor * 30,fontWeight: FontWeight.bold),),
-                          ),
-                          SizedBox(height: 10,),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text('131101 Ganaur,Sonipat',
-                                softWrap: true,
-                                style: TextStyle(color: Color(0xff263859),fontSize: SizeConfig.textScaleFactor * 15,fontWeight: FontWeight.w400),),
-                            ],
-                          ),
-                        ],
-                      ),
-                      CircleAvatar(
-                        radius: SizeConfig.hp(10),
-                        backgroundColor: AppColors.redAccent,
-                      ),
-                    ],
-                  ),
+//                  Row(
+//                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+//                    children: [
+//                      Column(
+//                        mainAxisAlignment: MainAxisAlignment.center,
+//                        crossAxisAlignment:CrossAxisAlignment.center,
+//                        children: [
+//                          Container(
+//                            width: SizeConfig.wp(50),
+//                            alignment: Alignment.center,
+//                            child: Text('DELHI INSTITUTE OF TECHNOLOGY AND MANAGEMENT ',
+//                              softWrap: true,
+//                              maxLines: 2,
+//                              style: TextStyle(color: AppColors.redAccent,
+//                                  fontSize: SizeConfig.textScaleFactor * 30,fontWeight: FontWeight.bold),),
+//                          ),
+//                          SizedBox(height: 10,),
+//                          Row(
+//                            mainAxisAlignment: MainAxisAlignment.center,
+//                            children: [
+//                              Text('131101 Ganaur,Sonipat',
+//                                softWrap: true,
+//                                style: TextStyle(color: Color(0xff263859),fontSize: SizeConfig.textScaleFactor * 15,fontWeight: FontWeight.w400),),
+//                            ],
+//                          ),
+//                        ],
+//                      ),
+//                      CircleAvatar(
+//                        radius: SizeConfig.hp(10),
+//                        backgroundColor: AppColors.redAccent,
+//                      ),
+//                    ],
+//                  ),
                   SizedBox(height: 15,),
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: SizeConfig.wp(2)),

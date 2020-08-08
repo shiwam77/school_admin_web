@@ -1,5 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:cloud_firestore_web/cloud_firestore_web.dart';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -9,6 +7,7 @@ import 'Locater.dart';
 import 'Screen/AcademicYear/AcademicYearChangeNotifier.dart';
 import 'Screen/AcademicYear/ViewModel/CrudViewModel.dart';
 import 'Screen/ClassSetup/Notifier/ClassIdNotifier.dart';
+import 'Screen/ClassSetup/ViewModel/StudentCRUD.dart';
 import 'Screen/ClassSetup/ViewModel/classCRUD.dart';
 import 'Screen/Login/SignIn.dart';
 
@@ -28,6 +27,7 @@ class MyApp extends StatelessWidget {
           ChangeNotifierProvider(create: (_)=> ClassNotifier(),),
           ChangeNotifierProvider(create: (_)=> ClassViewModel()),
           ChangeNotifierProvider(create: (_)=> SubjectViewModel()),
+          ChangeNotifierProvider(create: (_)=>StudentViewModel(),),
         ],
         child: MaterialApp(home: SignIn()));
   }
