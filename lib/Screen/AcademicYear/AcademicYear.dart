@@ -1,5 +1,5 @@
 import 'dart:math';
-
+import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -9,7 +9,7 @@ import 'package:school_admin_web/Screen/AcademicYear/Model/AcademicYearModel.dar
 import 'package:school_admin_web/Screen/MasterDetailScreen/DashBoard.dart';
 
 import 'package:school_admin_web/Widget/CenterView.dart';
-
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import '../../Color.dart';
 import '../../Image.dart';
 import '../../Responsive.dart';
@@ -229,12 +229,51 @@ class _AcademicYearState extends State<AcademicYear> {
                                                        );
                                                      }
                                                      else{
-                                                       return Center(child: Text('Fetching..',style: TextStyle(color: AppColors.white),));
+                                                       return Column(
+                                                         mainAxisAlignment: MainAxisAlignment.center,
+                                                         children: [
+                                                           SpinKitFadingFour(
+                                                             color: AppColors.redAccent,
+                                                             size: 50.0,
+
+                                                           ),
+                                                           SizedBox(height: 10,),
+                                                           Row(
+                                                             mainAxisAlignment: MainAxisAlignment.start,
+                                                             crossAxisAlignment: CrossAxisAlignment.baseline,
+                                                             textBaseline: TextBaseline.alphabetic,
+                                                             children: [
+                                                               Container(
+                                                                 margin: EdgeInsets.only(top: 25),
+                                                                 height: 3,
+                                                                 width: 90,
+                                                                 color: AppColors.redAccent,
+                                                               ),
+
+                                                               Text(' LOADING',style: TextStyle(color: AppColors.white,letterSpacing: 10,fontSize: SizeConfig.textScaleFactor * 15,fontWeight: FontWeight.bold),),
+                                                               TyperAnimatedTextKit(
+                                                                   text: [
+                                                                     '...'
+                                                                   ],
+                                                                   isRepeatingAnimation: true,
+                                                                   speed: Duration(milliseconds: 100),
+                                                                   textStyle: TextStyle(
+                                                                       color: AppColors.redAccent,
+                                                                       letterSpacing: 5,fontSize: SizeConfig.textScaleFactor * 30,fontWeight: FontWeight.bold
+                                                                   ),
+                                                                   textAlign: TextAlign.start,
+                                                                   alignment: AlignmentDirectional.topStart
+                                                               )
+                                                             ],
+                                                           ),
+                                                         ],
+                                                       );
                                                      }
                                                    },
                                                  ),
                                                ),
-                                             )
+                                             ),
+
                                     ],
                                   ),
                                 )
