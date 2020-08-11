@@ -1,7 +1,7 @@
 import 'dart:typed_data';
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
+
 import 'package:intl/intl.dart';
 import  'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -14,7 +14,7 @@ import 'package:school_admin_web/Screen/ClassSetup/ViewModel/StudentCRUD.dart';
 import '../../Color.dart';
 import '../../Responsive.dart';
 import 'package:popup_box/popup_box.dart';
-import 'package:auto_size_text/auto_size_text.dart';
+
 import '../../Utiity.dart';
 import 'Model/ClassModel.dart';
 import 'Notifier/ClassIdNotifier.dart';
@@ -44,7 +44,7 @@ class _ManageClassState extends State<ManageClass> {
   List<SubjectModel> subjectList;
   int currentSelectedIndex;
   List<StudentModel> studentList;
-
+  String gender;
   @override
   Widget build(BuildContext context) {
     final classProvider = Provider.of<ClassViewModel >(context,listen: true);
@@ -52,7 +52,9 @@ class _ManageClassState extends State<ManageClass> {
     final subjectProvider = Provider.of<SubjectViewModel >(context,listen: true);
     final classIdProvider = Provider.of<ClassNotifier>(context,listen: true);
     final studentProvider = Provider.of<StudentViewModel>(context,listen: true);
-
+ setState(() {
+   gender='Male';
+ });
     return Expanded(
         child: Container(
             width: double.infinity,
@@ -102,12 +104,17 @@ class _ManageClassState extends State<ManageClass> {
                                     margin: const EdgeInsets.symmetric(horizontal: 10),
                                     height:SizeConfig.hp(5),
                                     alignment: Alignment.center,
-                                    width: 100,
+                                    width: 120,
                                     decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(15),
                                       color:currentSelectedIndex == index ?AppColors.redAccent:AppColors.white,
                                     ),
-                                    child:Text(classList[index].classes),),
+                                    child:Padding(
+                                      padding: EdgeInsets.symmetric(horizontal: 2),
+                                      child: FittedBox(
+                                        fit: BoxFit.contain,
+                                          child: Text(classList[index].classes,maxLines: 1,)),
+                                    ),),
                                 );
                               },
 
@@ -726,6 +733,12 @@ class _ManageClassState extends State<ManageClass> {
     String contact = studentList[index].contact;
     String rollNo = studentList[index].rollNo;
     String dob = studentList[index].dateOfBirth;
+
+    List <String> getGender = [
+    'Male',
+    'Female',
+    'Other',
+    ] ;
     return showPopupWindow(
       context,
       gravity: KumiPopupGravity.rightBottom,
@@ -792,26 +805,55 @@ class _ManageClassState extends State<ManageClass> {
                         color: AppColors.redAccent,),
                     ),
                     SizedBox(height: 5,),
-                    SizedBox(
-                      width:SizeConfig.wp(20),
-                      child: TextField(
-                        controller: TextEditingController(text:studentName),
-                        style: TextStyle(
-                            color: Color(0xff263859),
-                            fontSize: SizeConfig.textScaleFactor * 20,
-                            fontWeight: FontWeight.bold),
-                        onChanged: (value){
-                         studentName = value;
-                        },
-                        decoration: InputDecoration(
-                            contentPadding: EdgeInsets.symmetric(vertical: 5),
-                            border: InputBorder.none
-                        ),),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        SizedBox(
+                          width:SizeConfig.wp(20),
+                          child: TextField(
+                            controller: TextEditingController(text:studentName),
+                            style: TextStyle(
+                                color: Color(0xff263859),
+                                fontSize: SizeConfig.textScaleFactor * 20,
+                                fontWeight: FontWeight.bold),
+                            onChanged: (value){
+                             studentName = value;
+                            },
+                            decoration: InputDecoration(
+                                contentPadding: EdgeInsets.symmetric(vertical: 5),
+                                border: InputBorder.none
+                            ),),
+                        ),
+                        DropdownButton<String>(
+                          value: gender,
+                          icon: Icon(Icons.arrow_drop_down),
+                          iconSize: 24,
+                          elevation: 16,
+                          style: TextStyle(color: Colors.red, fontSize: 18),
+                          underline: Container(
+                            height: 2,
+                            color: Colors.transparent,
+                          ),
+                          onChanged: (String data) {
+                            setState(() {
+                              gender = data;
+                              print(gender);
+                            });
+                            setState(() {
+                            });
+                          },
+                          items: getGender.map<DropdownMenuItem<String>>((String value) {
+
+                            return DropdownMenuItem<String>(
+                              value: value,
+                              child: Text(value),
+                            );
+
+                          }).toList(),
+                        )
+                      ],
                     ),
-                    SizedBox(height: 5,),
-                    Text('${getAge(birthDate: dateOfBirth).years.toString()},${studentList[index].gender}'
-                      ,style: TextStyle(color: AppColors.redAccent,fontWeight: FontWeight.w300),),
-                    SizedBox(height: 30,),
+                    SizedBox(height: 20,),
                     Container(
                       width: 500,
                       height: 300,
@@ -908,7 +950,7 @@ class _ManageClassState extends State<ManageClass> {
                           onTap: (){
                             final studentProvider = Provider.of<StudentViewModel>(context,listen: false);
                             StudentModel updatedStd = StudentModel(studentName: studentName,rollNo: rollNo,fatherName: fatherName,motherName: motherName
-                            ,address: address,emailAddress: emailAddress,contact: contact,dateOfBirth: dob,academicId:studentList[index].academicId,classId: studentList[index].classId,gender: studentList[index].gender
+                            ,address: address,emailAddress: emailAddress,contact: contact,dateOfBirth: dob,academicId:studentList[index].academicId,classId: studentList[index].classId,gender: gender
                             ,imageUrl: '',imagePath: '',);
                              studentProvider.updateStudent(updatedStd, studentList[index].id);
                             Navigator.pop(context);
@@ -1204,14 +1246,9 @@ class _AddStudentInputState extends State<AddStudentInput> {
             padding: EdgeInsets.all(4),
             child: GestureDetector(
               onTap:  pickImageAsByte,
-              child: Container(
-                  width: 190.0,
-                  height: 190.0,
-                  decoration: new BoxDecoration(
-                      shape: BoxShape.circle,
-
-                      ),
-                alignment: Alignment.center,
+              child: CircleAvatar(
+                  radius: 100,
+                backgroundColor: AppColors.white,
                 child:bytesFromPicker != null ? ClipRRect(
                   borderRadius: BorderRadius.circular(80),
                     child: Image.memory(

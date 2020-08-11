@@ -10,10 +10,11 @@ class StudentModel {
   String emailAddress;
   String dateOfBirth;
   String contact;
+  String parentsContact;
   String gender;
   String imageUrl;
   String imagePath;
-  StudentModel({this.id, this.studentName,this.classId,this.academicId,this.gender,this.address,this.contact,this.dateOfBirth,
+  StudentModel({this.id, this.studentName,this.classId,this.academicId,this.gender,this.address,this.contact,this.parentsContact,this.dateOfBirth,
   this.emailAddress,this.fatherName,this.imageUrl,this.motherName,this.rollNo,this.imagePath});
   StudentModel.fromMap(Map snapshot,String id) :
         id = id ?? '',
@@ -27,6 +28,7 @@ class StudentModel {
         emailAddress = snapshot['emailAddress'] ?? '',
         dateOfBirth = snapshot['dateOfBirth'] ?? '',
         contact = snapshot['contact'] ?? '',
+        parentsContact = snapshot['parentsContact'] ?? '',
         gender = snapshot['gender'] ?? '',
         imageUrl = snapshot['imageUrl'] ?? '',
         imagePath = snapshot['imagePath'] ?? ''
@@ -43,6 +45,7 @@ class StudentModel {
       "emailAddress":emailAddress,
       "dateOfBirth":dateOfBirth,
       "contact":contact,
+      "parentsContact":parentsContact,
       "gender":gender,
       "imageUrl":imageUrl,
       "imagePath":imagePath,

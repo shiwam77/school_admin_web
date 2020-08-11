@@ -1,7 +1,14 @@
-import 'dart:html';
 
-import 'package:flutter/cupertino.dart';
+import 'package:animated_text_kit/animated_text_kit.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:school_admin_web/Screen/AcademicYear/AcademicYearChangeNotifier.dart';
+import 'package:school_admin_web/Screen/ClassSetup/Model/ClassModel.dart';
+import 'package:school_admin_web/Screen/ClassSetup/Model/SubjectModel.dart';
+import 'package:school_admin_web/Screen/ClassSetup/Notifier/ClassIdNotifier.dart';
+import 'package:school_admin_web/Screen/ClassSetup/ViewModel/classCRUD.dart';
+import 'package:school_admin_web/Screen/ClassSetup/ViewModel/subjectCRUD.dart';
 
 import '../../Color.dart';
 import '../../Responsive.dart';
@@ -12,8 +19,15 @@ class HomeWork extends StatefulWidget {
 }
 
 class _HomeWorkState extends State<HomeWork> {
+  List<SubjectModel> subjectList;
+  List<ClassModel> classList;
+  int currentSelectedIndex;
   @override
   Widget build(BuildContext context) {
+    final classProvider = Provider.of<ClassViewModel >(context,listen: true);
+    final academicId  = Provider.of<YearNotifier>(context,listen: true);
+    final subjectProvider = Provider.of<SubjectViewModel >(context,listen: true);
+    final classIdProvider = Provider.of<ClassNotifier>(context,listen: true);
     return Expanded(child: Container(
       width: double.infinity,
       height: double.infinity,
@@ -44,25 +58,7 @@ class _HomeWorkState extends State<HomeWork> {
             ],
           ),
           SizedBox(height: SizeConfig.hp(2),),
-          SizedBox(
-            height: SizeConfig.hp(5),
-            width:SizeConfig.wp(60),
-            child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                itemCount: 10,
-                itemBuilder: (context,index){
-                  return Container(
-                    margin: const EdgeInsets.symmetric(horizontal: 10),
-                    height:SizeConfig.hp(5),
-                    alignment: Alignment.center,
-                    width: 100,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(15),
-                      color:AppColors.redAccent,
-                    ),
-                    child:Text('Class One'),);
-                }),
-          ),
+          classTile(),
           Padding(
             padding: EdgeInsets.symmetric(horizontal: SizeConfig.wp(10)),
             child: Container(
@@ -111,6 +107,91 @@ class _HomeWorkState extends State<HomeWork> {
         ],
       ),
     ));
+  }
+  Widget classTile(){
+    final classProvider = Provider.of<ClassViewModel >(context,listen: true);
+    final academicId  = Provider.of<YearNotifier>(context,listen: true);
+    final classIdProvider = Provider.of<ClassNotifier>(context,listen: true);
+    return SizedBox(
+      height: SizeConfig.hp(5),
+      width:SizeConfig.wp(60),
+      child: StreamBuilder(
+          stream:classProvider.fetchClassAsStream(),
+          builder: (context, AsyncSnapshot<QuerySnapshot> snapshot){
+            if(snapshot.hasData){
+              classList = snapshot.data.documents.map((e) =>
+                  ClassModel.fromMap(e.data, e.documentID))
+                  .where((element) => element.academicYearId == academicId.getYearId()).toList();
+              return ListView.builder(
+                scrollDirection: Axis.horizontal,
+                itemCount: classList.length,
+                itemBuilder: (context,index){
+                  return Consumer<ClassNotifier>(
+                    builder: (context,classIdNotify,child){
+                      return InkWell(
+                        onTap: (){
+                          setState(() {
+                            currentSelectedIndex = index;
+                            classIdNotify.changeClassID(classList[index].id);
+                          });
+                        },
+                        child: Container(
+                          margin: const EdgeInsets.symmetric(horizontal: 10),
+                          height:SizeConfig.hp(5),
+                          alignment: Alignment.center,
+                          width: 120,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(15),
+                            color:currentSelectedIndex == index ?AppColors.redAccent:AppColors.white,
+                          ),
+                          child:Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 2),
+                            child: FittedBox(
+                                fit: BoxFit.contain,
+                                child: Text(classList[index].classes,maxLines: 1,)),
+                          ),),
+                      );
+                    },
+
+                  );
+                },
+              );
+            }
+            else{
+              return Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                      height:SizeConfig.hp(7),
+                      width:150,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.baseline,
+                        textBaseline: TextBaseline.alphabetic,
+                        children: [
+                          Text(' Loading ',style: TextStyle(color: AppColors.loginBackgroundColor,letterSpacing: .5,fontSize: SizeConfig.textScaleFactor * 10,),),
+                          TyperAnimatedTextKit(
+                              text: [
+                                '.......',
+                              ],
+                              isRepeatingAnimation: true,
+                              speed: Duration(milliseconds: 100),
+                              textStyle: TextStyle(
+                                  color: AppColors.redAccent,
+                                  letterSpacing: 5,fontSize: SizeConfig.textScaleFactor * 30,fontWeight: FontWeight.bold
+                              ),
+                              textAlign: TextAlign.start,
+                              alignment: AlignmentDirectional.topStart
+                          )
+                        ],
+                      )),
+                ],
+              );
+            }
+          }
+
+      ),
+    );
   }
   Widget screenHeader(String tittle){
     return  Row(
