@@ -46,6 +46,7 @@ dependencies:
   auto_size_text: ^2.1.0
   animated_text_kit: ^2.2.0
   age: ^0.0.1
+  jiffy: ^3.0.1
 
 
 dev_dependencies:

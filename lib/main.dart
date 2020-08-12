@@ -9,6 +9,7 @@ import 'Screen/AcademicYear/ViewModel/CrudViewModel.dart';
 import 'Screen/ClassSetup/Notifier/ClassIdNotifier.dart';
 import 'Screen/ClassSetup/ViewModel/StudentCRUD.dart';
 import 'Screen/ClassSetup/ViewModel/classCRUD.dart';
+import 'Screen/CreateHomework/ViewModel/HomeworkCRUD.dart';
 import 'Screen/Login/SignIn.dart';
 
 void main() {
@@ -28,6 +29,7 @@ class MyApp extends StatelessWidget {
           ChangeNotifierProvider(create: (_)=> ClassViewModel()),
           ChangeNotifierProvider(create: (_)=> SubjectViewModel()),
           ChangeNotifierProvider(create: (_)=>StudentViewModel(),),
+          ChangeNotifierProvider(create: (_)=>HomeWorkViewModel(),),
         ],
         child: MaterialApp(home: SignIn()));
   }

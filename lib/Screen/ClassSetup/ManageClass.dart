@@ -756,222 +756,224 @@ class _ManageClassState extends State<ManageClass> {
       offsetY: -175,
       duration: Duration(milliseconds: 200),
       childFun: (pop) {
-        return Container(
-            key: GlobalKey(),
-            padding: EdgeInsets.all(10),
-            height: 575,
-            width: 550,
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(16),
-                color: AppColors.white,
-                boxShadow: [
-                  BoxShadow(
-                    color: Color(0xff707070).withOpacity(.4),
-                    offset: Offset(0, 0),
-                    blurRadius: 10,
-                  )
-                ]),
-            child:Stack(
-              children: [
-                Align(
-                  alignment: Alignment.topRight,
-                  child: InkWell(
-                    onTap: (){
-                      Navigator.pop(context);
-                    },
-                    child: Icon(Icons.close),
-                  ),
-                ),
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
+        return StatefulBuilder(
+          key: GlobalKey(),
+          builder: (context,StateSetter setState){
+            return  Container(
+                padding: EdgeInsets.all(10),
+                height: 575,
+                width: 550,
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(16),
+                    color: AppColors.white,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Color(0xff707070).withOpacity(.4),
+                        offset: Offset(0, 0),
+                        blurRadius: 10,
+                      )
+                    ]),
+                child:Stack(
                   children: [
-                    Container(
-                      width: 100.0,
-                      height: 100.0,
-                      decoration: new BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: AppColors.redAccent
+                    Align(
+                      alignment: Alignment.topRight,
+                      child: InkWell(
+                        onTap: (){
+                          Navigator.pop(context);
+                        },
+                        child: Icon(Icons.close),
                       ),
-                      alignment: Alignment.center,
-                      child:studentList[index].imageUrl != null ? ClipRRect(
-                          borderRadius: BorderRadius.circular(40),
-                          child: Image.network(
-                            studentList[index].imageUrl,
-                            fit:BoxFit.fill,width: 80,height: 800,
-                            filterQuality: FilterQuality.high,
-                          )):Icon(
-                        Icons.account_circle,
-                        size: 150,
-                        color: AppColors.redAccent,),
                     ),
-                    SizedBox(height: 5,),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        SizedBox(
-                          width:SizeConfig.wp(20),
-                          child: TextField(
-                            controller: TextEditingController(text:studentName),
-                            style: TextStyle(
-                                color: Color(0xff263859),
-                                fontSize: SizeConfig.textScaleFactor * 20,
-                                fontWeight: FontWeight.bold),
-                            onChanged: (value){
-                             studentName = value;
-                            },
-                            decoration: InputDecoration(
-                                contentPadding: EdgeInsets.symmetric(vertical: 5),
-                                border: InputBorder.none
-                            ),),
-                        ),
-                        DropdownButton<String>(
-                          value: gender,
-                          icon: Icon(Icons.arrow_drop_down),
-                          iconSize: 24,
-                          elevation: 16,
-                          style: TextStyle(color: Colors.red, fontSize: 18),
-                          underline: Container(
-                            height: 2,
-                            color: Colors.transparent,
+                        Container(
+                          width: 100.0,
+                          height: 100.0,
+                          decoration: new BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: AppColors.redAccent
                           ),
-                          onChanged: (String data) {
-                            setState(() {
-                              gender = data;
-                              print(gender);
-                            });
-                            setState(() {
-                            });
-                          },
-                          items: getGender.map<DropdownMenuItem<String>>((String value) {
+                          alignment: Alignment.center,
+                          child:studentList[index].imageUrl != null ? ClipRRect(
+                              borderRadius: BorderRadius.circular(40),
+                              child: Image.network(
+                                studentList[index].imageUrl,
+                                fit:BoxFit.fill,width: 80,height: 800,
+                                filterQuality: FilterQuality.high,
+                              )):Icon(
+                            Icons.account_circle,
+                            size: 150,
+                            color: AppColors.redAccent,),
+                        ),
+                        SizedBox(height: 5,),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            SizedBox(
+                              width:SizeConfig.wp(20),
+                              child: TextField(
+                                controller: TextEditingController(text:studentName),
+                                style: TextStyle(
+                                    color: Color(0xff263859),
+                                    fontSize: SizeConfig.textScaleFactor * 20,
+                                    fontWeight: FontWeight.bold),
+                                onChanged: (value){
+                                  studentName = value;
+                                },
+                                decoration: InputDecoration(
+                                    contentPadding: EdgeInsets.symmetric(vertical: 5),
+                                    border: InputBorder.none
+                                ),),
+                            ),
+                            DropdownButton<String>(
+                              value: gender,
+                              icon: Icon(Icons.arrow_drop_down),
+                              iconSize: 24,
+                              elevation: 16,
+                              style: TextStyle(color: Colors.red, fontSize: 18),
+                              underline: Container(
+                                height: 2,
+                                color: Colors.transparent,
+                              ),
+                              onChanged: (String data) {
+                                setState(() {
+                                  gender = data;
+                                  print(gender);
+                                });
+                              },
+                              items: getGender.map<DropdownMenuItem<String>>((String value) {
 
-                            return DropdownMenuItem<String>(
-                              value: value,
-                              child: Text(value),
-                            );
+                                return DropdownMenuItem<String>(
+                                  value: value,
+                                  child: Text(value),
+                                );
 
-                          }).toList(),
+                              }).toList(),
+                            )
+                          ],
+                        ),
+                        SizedBox(height: 20,),
+                        Container(
+                          width: 500,
+                          height: 300,
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(16),
+                              color: AppColors.white,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Color(0xff707070).withOpacity(.4),
+                                  offset: Offset(0, 0),
+                                  blurRadius: 15,
+                                )
+                              ]),
+                          child: ListView(
+                            children: [
+                              Padding(
+                                padding:  EdgeInsets.symmetric(horizontal: 20),
+                                child:Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Column(
+                                      mainAxisAlignment: MainAxisAlignment.start,
+                                      crossAxisAlignment: CrossAxisAlignment.baseline,
+                                      textBaseline: TextBaseline.alphabetic,
+                                      children: [
+                                        label(tittle: 'Roll No'),
+                                        label(tittle: "Father's Name"),
+                                        label(tittle: "Mother's Name"),
+                                        label(tittle: 'Address'),
+                                        label(tittle: 'D.O.B'),
+                                        label(tittle: 'Contact'),
+                                        label(tittle: 'Email Address'),
+                                      ],
+                                    ),
+                                    Column(
+                                      mainAxisAlignment: MainAxisAlignment.start,
+                                      children: [
+                                        editTextField(text:studentList[index].rollNo,
+                                            onChanged: (value){
+                                              setState(() {
+                                                rollNo =value;
+                                              });
+                                            }),
+                                        editTextField(text:studentList[index].fatherName,
+                                            onChanged: (value){
+                                              setState(() {
+                                                fatherName = value;
+                                                print(fatherName);
+                                              });
+                                            }),
+                                        editTextField(text:studentList[index].motherName,
+                                            onChanged: (value){
+                                              setState(() {
+                                                motherName = value;
+                                              });
+                                            }),
+                                        editTextField(text:studentList[index].address,
+                                            onChanged: (value){
+                                              setState(() {
+                                                address = value;
+                                              });
+                                            }),
+                                        editTextField(text:studentList[index].dateOfBirth,
+                                            onChanged: (value){
+                                              setState(() {
+                                                dob = value;
+                                              });
+                                            }),
+                                        editTextField(text:studentList[index].contact,
+                                            onChanged: (value){
+                                              setState(() {
+                                                contact = value;
+                                              });
+                                            }),
+                                        editTextField(text:studentList[index].emailAddress,
+                                            onChanged: (value){
+                                              setState(() {
+                                                emailAddress = value;
+                                              });
+                                            }),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        SizedBox(height: 20,),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            InkWell(
+                              onTap: (){
+                                final studentProvider = Provider.of<StudentViewModel>(context,listen: false);
+                                StudentModel updatedStd = StudentModel(studentName: studentName,rollNo: rollNo,fatherName: fatherName,motherName: motherName
+                                  ,address: address,emailAddress: emailAddress,contact: contact,dateOfBirth: dob,academicId:studentList[index].academicId,classId: studentList[index].classId,gender: gender
+                                  ,imageUrl: '',imagePath: '',);
+                                studentProvider.updateStudent(updatedStd, studentList[index].id);
+                                Navigator.pop(context);
+                              },
+                              child: Container(
+                                height: 30,
+                                width: 100,
+                                alignment: Alignment.center,
+                                child: Text('Update',style: TextStyle(color: AppColors.white),),
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(10),
+                                    color: AppColors.redAccent
+                                ),
+                              ),
+                            ),
+                          ],
                         )
                       ],
                     ),
-                    SizedBox(height: 20,),
-                    Container(
-                      width: 500,
-                      height: 300,
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(16),
-                          color: AppColors.white,
-                          boxShadow: [
-                            BoxShadow(
-                              color: Color(0xff707070).withOpacity(.4),
-                              offset: Offset(0, 0),
-                              blurRadius: 15,
-                            )
-                          ]),
-                      child: ListView(
-                        children: [
-                          Padding(
-                            padding:  EdgeInsets.symmetric(horizontal: 20),
-                            child:Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Column(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  crossAxisAlignment: CrossAxisAlignment.baseline,
-                                  textBaseline: TextBaseline.alphabetic,
-                                  children: [
-                                    label(tittle: 'Roll No'),
-                                    label(tittle: "Father's Name"),
-                                    label(tittle: "Mother's Name"),
-                                    label(tittle: 'Address'),
-                                    label(tittle: 'D.O.B'),
-                                    label(tittle: 'Contact'),
-                                    label(tittle: 'Email Address'),
-                                  ],
-                                ),
-                                Column(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  children: [
-                                    editTextField(text:studentList[index].rollNo,
-                                    onChanged: (value){
-                                     setState(() {
-                                       rollNo =value;
-                                     });
-                                    }),
-                                    editTextField(text:studentList[index].fatherName,
-                                        onChanged: (value){
-                                          setState(() {
-                                            fatherName = value;
-                                            print(fatherName);
-                                          });
-                                        }),
-                                    editTextField(text:studentList[index].motherName,
-                                        onChanged: (value){
-                                          setState(() {
-                                            motherName = value;
-                                          });
-                                        }),
-                                    editTextField(text:studentList[index].address,
-                                        onChanged: (value){
-                                          setState(() {
-                                            address = value;
-                                          });
-                                        }),
-                                    editTextField(text:studentList[index].dateOfBirth,
-                                        onChanged: (value){
-                                          setState(() {
-                                            dob = value;
-                                          });
-                                        }),
-                                    editTextField(text:studentList[index].contact,
-                                        onChanged: (value){
-                                          setState(() {
-                                            contact = value;
-                                          });
-                                        }),
-                                    editTextField(text:studentList[index].emailAddress,
-                                        onChanged: (value){
-                                          setState(() {
-                                            emailAddress = value;
-                                          });
-                                        }),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    SizedBox(height: 20,),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        InkWell(
-                          onTap: (){
-                            final studentProvider = Provider.of<StudentViewModel>(context,listen: false);
-                            StudentModel updatedStd = StudentModel(studentName: studentName,rollNo: rollNo,fatherName: fatherName,motherName: motherName
-                            ,address: address,emailAddress: emailAddress,contact: contact,dateOfBirth: dob,academicId:studentList[index].academicId,classId: studentList[index].classId,gender: gender
-                            ,imageUrl: '',imagePath: '',);
-                             studentProvider.updateStudent(updatedStd, studentList[index].id);
-                            Navigator.pop(context);
-                          },
-                          child: Container(
-                            height: 30,
-                            width: 100,
-                            alignment: Alignment.center,
-                            child: Text('Update',style: TextStyle(color: AppColors.white),),
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10),
-                                color: AppColors.redAccent
-                            ),
-                          ),
-                        ),
-                      ],
-                    )
                   ],
-                ),
-              ],
-            )
+                )
+            );
+          },
         );
       },
     );
