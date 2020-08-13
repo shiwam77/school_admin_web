@@ -6,6 +6,7 @@ import 'package:school_admin_web/Screen/ClassSetup/ViewModel/subjectCRUD.dart';
 import 'Locater.dart';
 import 'Screen/AcademicYear/AcademicYearChangeNotifier.dart';
 import 'Screen/AcademicYear/ViewModel/CrudViewModel.dart';
+import 'Screen/Attendance/ViewModel/AttendanceCRUD.dart';
 import 'Screen/ClassSetup/Notifier/ClassIdNotifier.dart';
 import 'Screen/ClassSetup/ViewModel/StudentCRUD.dart';
 import 'Screen/ClassSetup/ViewModel/classCRUD.dart';
@@ -26,10 +27,13 @@ class MyApp extends StatelessWidget {
           ChangeNotifierProvider(create: (_) => academicLocator<AcademicYearViewModel>()),
           ChangeNotifierProvider(create: (_)=> YearNotifier(),),
           ChangeNotifierProvider(create: (_)=> ClassNotifier(),),
+          ChangeNotifierProvider(create: (_)=> fetchingClassIDNotifier(),),
+          ChangeNotifierProvider(create: (_)=> AttendanceClassIDNotifier(),),
           ChangeNotifierProvider(create: (_)=> ClassViewModel()),
           ChangeNotifierProvider(create: (_)=> SubjectViewModel()),
           ChangeNotifierProvider(create: (_)=>StudentViewModel(),),
           ChangeNotifierProvider(create: (_)=>HomeWorkViewModel(),),
+          ChangeNotifierProvider(create: (_)=> AttendanceViewModel(),),
         ],
         child: MaterialApp(home: SignIn()));
   }

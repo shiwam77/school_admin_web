@@ -97,7 +97,7 @@ class _ManageClassState extends State<ManageClass> {
                                   onTap: (){
                                     setState(() {
                                       currentSelectedIndex = index;
-                                      classIdNotify.changeSetupClassClassID(classList[index].id);
+                                      classIdNotify.changeClassClassID(classList[index].id);
                                     });
                                   },
                                   child: Container(
@@ -159,7 +159,7 @@ class _ManageClassState extends State<ManageClass> {
               ),
 
               SizedBox(height: SizeConfig.hp(2),),
-              classIdProvider.getClassSetupClassId() != null?Expanded(
+              classIdProvider.getClassId() != null?Expanded(
                 child: ListView(
                   children: [
                     Row(
@@ -175,7 +175,7 @@ class _ManageClassState extends State<ManageClass> {
                                     if(snapshot.hasData){
                                       subjectList = snapshot.data.documents.map((e) =>
                                           SubjectModel.fromMap(e.data, e.documentID))
-                                          .where((element) =>element.academicId ==academicId.getYearId() && element.classId == classIdProvider.getClassSetupClassId()).toList();
+                                          .where((element) =>element.academicId ==academicId.getYearId() && element.classId == classIdProvider.getClassId()).toList();
                                       return ListView.builder(
                                           itemCount:subjectList.length,
                                           itemBuilder: (context,index){
@@ -254,7 +254,7 @@ class _ManageClassState extends State<ManageClass> {
                                     if(snapshot.hasData){
                                       studentList = snapshot.data.documents.map((e) =>
                                           StudentModel.fromMap(e.data, e.documentID))
-                                          .where((element) =>element.academicId ==academicId.getYearId() && element.classId == classIdProvider.getClassSetupClassId()).toList();
+                                          .where((element) =>element.academicId ==academicId.getYearId() && element.classId == classIdProvider.getClassId()).toList();
                                       return ListView.builder(
                                           itemCount: studentList.length,
                                           itemBuilder: (context,index){
@@ -433,7 +433,7 @@ class _ManageClassState extends State<ManageClass> {
                             final classIdProvider = Provider.of<ClassNotifier>(context,listen: false);
                             final academicId  = Provider.of<YearNotifier>(context,listen:false);
                             if(subject.isNotEmpty){
-                              subjectProvider.addSubject(SubjectModel(subject:subject,academicId: academicId.getYearId(),classId:classIdProvider.getClassSetupClassId()));
+                              subjectProvider.addSubject(SubjectModel(subject:subject,academicId: academicId.getYearId(),classId:classIdProvider.getClassId()));
                               subject ='';
                               _textEditingController.clear();
                             }
@@ -545,7 +545,7 @@ class _ManageClassState extends State<ManageClass> {
                             final classIdProvider = Provider.of<ClassNotifier>(context,listen: false);
                             final academicId  = Provider.of<YearNotifier>(context,listen:false);
                             if(subject.isNotEmpty){
-                              SubjectModel updatedSubject = SubjectModel(subject:subject,academicId: academicId.getYearId(),classId:classIdProvider.getClassSetupClassId());
+                              SubjectModel updatedSubject = SubjectModel(subject:subject,academicId: academicId.getYearId(),classId:classIdProvider.getClassId());
                               subjectProvider.updateSubject(updatedSubject,subjectList[index].id);
                               subject ='';
                             }
@@ -1413,7 +1413,7 @@ class _AddStudentInputState extends State<AddStudentInput> {
                   onPressed: () {
                      studentProvider.addStudent(StudentModel(
                        academicId: academicId.getYearId(),
-                       classId: classIdProvider.getClassSetupClassId(),
+                       classId: classIdProvider.getClassId(),
                        studentName: studentName,
                        rollNo: rollNo,
                        fatherName: fatherName,

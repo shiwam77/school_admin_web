@@ -6,7 +6,7 @@ import 'package:school_admin_web/Service/FirebaseApi.dart';
 class StudentViewModel extends ChangeNotifier {
   Api _api = Api('student');
   List<StudentModel> student;
-  Future<List<StudentModel>> fetchClass() async {
+  Future<List<StudentModel>> fetchStudent() async {
     var result = await _api.getDataCollection();
     student = result.documents
         .map((doc) => StudentModel.fromMap(doc.data, doc.documentID))

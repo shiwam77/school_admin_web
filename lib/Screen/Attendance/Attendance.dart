@@ -2,15 +2,30 @@ import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:jiffy/jiffy.dart';
 import 'package:provider/provider.dart';
 import 'package:school_admin_web/Screen/AcademicYear/AcademicYearChangeNotifier.dart';
+import 'package:school_admin_web/Screen/Attendance/Model/AttendanceModel.dart';
+import 'package:school_admin_web/Screen/Attendance/ViewModel/AttendanceCRUD.dart';
 import 'package:school_admin_web/Screen/ClassSetup/Model/ClassModel.dart';
 import 'package:school_admin_web/Screen/ClassSetup/Notifier/ClassIdNotifier.dart';
 import 'package:school_admin_web/Screen/ClassSetup/ViewModel/classCRUD.dart';
 import 'package:school_admin_web/Screen/CreateHomework/HomeWork.dart';
 
 import '../../Color.dart';
+import '../../Color.dart';
+import '../../Color.dart';
 import '../../Responsive.dart';
+import '../ClassSetup/Model/StudentModel.dart';
+import '../ClassSetup/ViewModel/StudentCRUD.dart';
+
+class Attendances{
+  static String present='Present';
+  static String absent='Absent';
+  static String onLeave='OnLeave';
+  static String holiday='Holiday';
+  static String none='None';
+}
 class Attendance extends StatefulWidget {
   @override
   _AttendanceState createState() => _AttendanceState();
@@ -20,8 +35,23 @@ class _AttendanceState extends State<Attendance> {
   DateTime currentDateTime =DateTime.now();
   List<ClassModel> classList;
   int currentSelectedIndex;
+  List<AttendanceModel> attendanceList;
+  List<AttendanceModel> snapShotAttendanceList;
+  Color presentColor = Color(0xff39CE15);
+  Color present;
+  Color absentColor = Color(0xffFF3B3B);
+  Color absent;
+  Color onLeaveColor = Color(0xff00B9BA);
+  Color onLeave;
+  Color holidayColor = Color(0xff6B778D);
+  Color holiday;
+  Color noneColor = AppColors.white;
   @override
   Widget build(BuildContext context) {
+    final attendanceProvider = Provider.of<AttendanceViewModel>(context,listen: true);
+    final studentProvider = Provider.of<StudentViewModel>(context,listen: true);
+    final classIdProvider = Provider.of<fetchingClassIDNotifier>(context,listen: true);
+    final academicId  = Provider.of<YearNotifier>(context,listen: true);
     return Expanded(
         child: Container(
           width: double.infinity,
@@ -138,39 +168,89 @@ class _AttendanceState extends State<Attendance> {
                       ]),
                   child: Padding(
                     padding: EdgeInsets.symmetric(horizontal: 40,vertical: 10),
-                    child: ListView.builder(
-                      scrollDirection: Axis.vertical,
-                      itemCount: 10,
-                        itemBuilder: (context,index){
-                      return Container(
-                        width: double.infinity,
-                        height:  50,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text('1.',style: TextStyle(color: Color(0xff263859),fontWeight: FontWeight.w300)),
-                            Text('Shiwam Karn',style: TextStyle(color: Color(0xff263859),fontWeight: FontWeight.w300),),
-                            SizedBox(width: 20,),
-                            CircleAvatar(
-                              backgroundColor: Color(0xff39CE15),
-                              radius: 15,
-                                child: Text('P')),
-                            CircleAvatar(
-                                backgroundColor: Color(0xffFF3B3B),
-                                radius: 15,
-                                child: Text('A')),
-                            CircleAvatar(
-                                backgroundColor: Color(0xff00B9BA),
-                                radius: 15,
-                                child: Text('L')),
-                            CircleAvatar(
-                                backgroundColor: Color(0xff6B778D),
-                                radius: 15,
-                                child: Text('H')),
-                          ],
-                        )
-                      );
-                    }),
+                    child: FutureBuilder(
+                      future: studentProvider.fetchStudent(),
+                      builder: (context,snapShot){
+                        List<StudentModel> getStudentList;
+                        if(snapShot.hasData){
+                          getStudentList = snapShot.data;
+                          return FutureBuilder(
+                            future: attendanceProvider.fetchAttendance(),
+                              builder: (context,snapShot2){
+                                attendanceList =[];
+                                List<StudentModel> currentStudentList = getStudentList.where((e) => e.academicId == academicId.getYearId()&&
+                                    e.classId == classIdProvider.getClassId()).toList();
+                              if(snapShot2.hasData){
+                               snapShotAttendanceList = snapShot2.data;
+                               currentStudentList.forEach((element) {
+                                 AttendanceModel currentAttendance = snapShotAttendanceList.firstWhere((e) => e.classId == element.classId && e.academicId == element.academicId &&
+                                 e.studentId == element.id && e.date == toStoreDate(currentDateTime).toString(),orElse: ()=>null);
+                                 if(currentAttendance != null){
+                                   attendanceList.add(currentAttendance);
+                                 }
+                                 else{
+                                   AttendanceModel noAttendance = AttendanceModel(academicId: element.id,classId: element.classId,studentId:element.id,studentName: element.studentName,
+                                   date: toStoreDate(currentDateTime).toString(),attendance: Attendances.present.toString(),rollNo: element.rollNo);
+                                   attendanceList.add(noAttendance);
+                                 }
+                               });
+                                return ListView.builder(
+                                    scrollDirection: Axis.vertical,
+                                    itemCount:attendanceList.length,
+                                    itemBuilder: (context,index){
+
+                                      return Container(
+                                          width: double.infinity,
+                                          height:  50,
+                                          child: Row(
+                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Text('${attendanceList[index].rollNo}.',style: TextStyle(color: Color(0xff263859),fontWeight: FontWeight.w300)),
+                                              Text(attendanceList[index].studentName,style: TextStyle(color: Color(0xff263859),fontWeight: FontWeight.w300),),
+                                              SizedBox(width: 20,),
+                                              InkWell(
+                                                onTap: (){
+                                                 present == noneColor ?present= presentColor :present =noneColor;
+                                                },
+                                                child: CircleAvatar(
+                                                    backgroundColor:presentColor,
+                                                    radius: 15,
+                                                    child: Text('P')),
+                                              ),
+                                              InkWell(
+                                                child: CircleAvatar(
+                                                    backgroundColor: absent,
+                                                    radius: 15,
+                                                    child: Text('A')),
+                                              ),
+                                              InkWell(
+                                                  child: CircleAvatar(
+                                                    backgroundColor: onLeave,
+                                                    radius: 15,
+                                                    child: Text('L')),
+                                              ),
+                                              InkWell(
+                                                child: CircleAvatar(
+                                                    backgroundColor: holiday,
+                                                    radius: 15,
+                                                    child: Text('H')),
+                                              ),
+                                            ],
+                                          )
+                                      );
+                                    });
+                              }
+                              else{
+                                return SizedBox();
+                              }
+                              },
+                          );
+                        }
+                        else{
+                          return SizedBox();
+                        }
+                      },
+                    ),
                   ),
                 ),
               )
@@ -204,45 +284,48 @@ class _AttendanceState extends State<Attendance> {
   Widget classTile(){
     final classProvider = Provider.of<ClassViewModel >(context,listen: true);
     final academicId  = Provider.of<YearNotifier>(context,listen: true);
-    final classIdProvider = Provider.of<ClassNotifier>(context,listen: true);
     return SizedBox(
       height: SizeConfig.hp(5),
       width:SizeConfig.wp(60),
-      child: StreamBuilder(
-          stream:classProvider.fetchClassAsStream(),
-          builder: (context, AsyncSnapshot<QuerySnapshot> snapshot){
-            if(snapshot.hasData){
-              classList = snapshot.data.documents.map((e) =>
-                  ClassModel.fromMap(e.data, e.documentID))
-                  .where((element) => element.academicYearId == academicId.getYearId()).toList();
+      child: FutureBuilder(
+          future:classProvider.fetchClass(),
+          builder: (context, snapshot) {
+            List<ClassModel> getClassList;
+            if (snapshot.hasData) {
+              getClassList = snapshot.data;
+              classList =
+                  getClassList.where((element) => element.academicYearId ==
+                      academicId.getYearId()).toList();
               return ListView.builder(
                 scrollDirection: Axis.horizontal,
                 itemCount: classList.length,
-                itemBuilder: (context,index){
-                  return Consumer<ClassNotifier>(
-                    builder: (context,classIdNotify,child){
+                itemBuilder: (context, index) {
+                  return Consumer<fetchingClassIDNotifier>(
+                    builder: (context, classIdNotify, child) {
                       return InkWell(
-                        onTap: (){
+                        onTap: () {
                           setState(() {
                             currentSelectedIndex = index;
-                            classIdNotify.changeSetupClassClassID(classList[index].id);
-
+                            classIdNotify.changeClassClassID(
+                                classList[index].id);
                           });
                         },
                         child: Container(
                           margin: const EdgeInsets.symmetric(horizontal: 10),
-                          height:SizeConfig.hp(5),
+                          height: SizeConfig.hp(5),
                           alignment: Alignment.center,
                           width: 120,
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(15),
-                            color:currentSelectedIndex == index ?AppColors.redAccent:AppColors.white,
+                            color: currentSelectedIndex == index ? AppColors
+                                .redAccent : AppColors.white,
                           ),
-                          child:Padding(
+                          child: Padding(
                             padding: EdgeInsets.symmetric(horizontal: 2),
                             child: FittedBox(
                                 fit: BoxFit.contain,
-                                child: Text(classList[index].classes,maxLines: 1,)),
+                                child: Text(
+                                  classList[index].classes, maxLines: 1,)),
                           ),),
                       );
                     },
@@ -251,19 +334,25 @@ class _AttendanceState extends State<Attendance> {
                 },
               );
             }
-            else{
+            else if (snapshot.hasData == null) {
+              return Text('null');
+            }
+            else {
               return Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Container(
-                      height:SizeConfig.hp(7),
-                      width:150,
+                      height: SizeConfig.hp(7),
+                      width: 150,
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.baseline,
                         textBaseline: TextBaseline.alphabetic,
                         children: [
-                          Text(' Loading ',style: TextStyle(color: AppColors.loginBackgroundColor,letterSpacing: .5,fontSize: SizeConfig.textScaleFactor * 10,),),
+                          Text(' Loading ', style: TextStyle(
+                            color: AppColors.loginBackgroundColor,
+                            letterSpacing: .5,
+                            fontSize: SizeConfig.textScaleFactor * 10,),),
                           TyperAnimatedTextKit(
                               text: [
                                 '.......',
@@ -272,7 +361,9 @@ class _AttendanceState extends State<Attendance> {
                               speed: Duration(milliseconds: 100),
                               textStyle: TextStyle(
                                   color: AppColors.redAccent,
-                                  letterSpacing: 5,fontSize: SizeConfig.textScaleFactor * 30,fontWeight: FontWeight.bold
+                                  letterSpacing: 5,
+                                  fontSize: SizeConfig.textScaleFactor * 30,
+                                  fontWeight: FontWeight.bold
                               ),
                               textAlign: TextAlign.start,
                               alignment: AlignmentDirectional.topStart
@@ -283,8 +374,19 @@ class _AttendanceState extends State<Attendance> {
               );
             }
           }
-
       ),
     );
   }
+}
+String toStoreDate(DateTime timestamp) {
+  var moonLanding = timestamp;
+  var jiffy = Jiffy([
+    moonLanding.year,
+    moonLanding.month,
+    moonLanding.day,
+    moonLanding.hour,
+    moonLanding.minute,
+    00,
+  ]).format("dd,MMM yyy");
+  return jiffy;
 }

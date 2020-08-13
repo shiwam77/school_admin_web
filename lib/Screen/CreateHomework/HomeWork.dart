@@ -20,6 +20,7 @@ import 'package:school_admin_web/Screen/CreateHomework/Model/homeworkModel.dart'
 import 'package:school_admin_web/Screen/CreateHomework/ViewModel/HomeworkCRUD.dart';
 import '../../Color.dart';
 import '../../Responsive.dart';
+import '../ClassSetup/Model/ClassModel.dart';
 
 class HomeWork extends StatefulWidget {
   @override
@@ -36,7 +37,7 @@ class _HomeWorkState extends State<HomeWork> {
   File file;
   @override
   Widget build(BuildContext context) {
-    final classIdProvider = Provider.of<ClassNotifier>(context,listen: true);
+    final classIdProvider = Provider.of<fetchingClassIDNotifier>(context,listen: true);
     return Expanded(child: Container(
       width: double.infinity,
       height: double.infinity,
@@ -110,7 +111,7 @@ class _HomeWorkState extends State<HomeWork> {
           ),
           SizedBox(height: SizeConfig.hp(2),),
           classTile(),
-          classIdProvider.getClassSetupClassId() != null?
+          classIdProvider.getClassId() != null?
           subjectTileWithHomework():SizedBox(),
         ],
       ),
@@ -120,7 +121,7 @@ class _HomeWorkState extends State<HomeWork> {
     final homeworkProvider = Provider.of<HomeWorkViewModel>(context,listen: true);
     final academicId  = Provider.of<YearNotifier>(context,listen: true);
     final subjectProvider = Provider.of<SubjectViewModel >(context,listen: true);
-    final classIdProvider = Provider.of<ClassNotifier>(context,listen: true);
+    final classIdProvider = Provider.of<fetchingClassIDNotifier>(context,listen: true);
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: SizeConfig.wp(10),vertical: 10),
       child: Container(
@@ -130,7 +131,6 @@ class _HomeWorkState extends State<HomeWork> {
         child: FutureBuilder(
           future: subjectProvider.fetchClass(),
           builder: (context,snapshot){
-
             List<SubjectModel> subjects;
             if(snapshot.hasData){
               subjects = snapshot.data;
@@ -140,7 +140,7 @@ class _HomeWorkState extends State<HomeWork> {
                 builder: (context,snapshot2){
                   homeworkList = [];
                   List<SubjectModel> currentSubjects = subjectList
-                      .where((element) => element.academicId == academicId.getYearId() && element.classId == classIdProvider.getClassSetupClassId()).toList();
+                      .where((element) => element.academicId == academicId.getYearId() && element.classId == classIdProvider.getClassId()).toList();
                   if(snapshot2.hasData){
                     snapshotHomework = snapshot2.data;
                     currentSubjects.forEach((element) {
@@ -149,7 +149,6 @@ class _HomeWorkState extends State<HomeWork> {
                         homeworkList.add(currentSubjectHomework);
                       }
                       else{
-
                         HomeworkModel noHomework = HomeworkModel(subjectId: element.id,classId: element.classId,academicId: element.academicId,
                             subject: element.subject,time: toStoreDate(currentDateTime).toString());
                         homeworkList.add(noHomework);
@@ -204,10 +203,6 @@ class _HomeWorkState extends State<HomeWork> {
                   return SizedBox();
                 },
               );
-
-
-
-
             }
             else{
               return SizedBox();
@@ -228,45 +223,48 @@ class _HomeWorkState extends State<HomeWork> {
   Widget classTile(){
     final classProvider = Provider.of<ClassViewModel >(context,listen: true);
     final academicId  = Provider.of<YearNotifier>(context,listen: true);
-    final classIdProvider = Provider.of<ClassNotifier>(context,listen: true);
     return SizedBox(
       height: SizeConfig.hp(5),
       width:SizeConfig.wp(60),
-      child: StreamBuilder(
-          stream:classProvider.fetchClassAsStream(),
-          builder: (context, AsyncSnapshot<QuerySnapshot> snapshot){
-            if(snapshot.hasData){
-              classList = snapshot.data.documents.map((e) =>
-                  ClassModel.fromMap(e.data, e.documentID))
-                  .where((element) => element.academicYearId == academicId.getYearId()).toList();
+      child: FutureBuilder(
+          future:classProvider.fetchClass(),
+          builder: (context, snapshot) {
+            List<ClassModel> getClassList;
+            if (snapshot.hasData) {
+              getClassList = snapshot.data;
+              classList =
+                  getClassList.where((element) => element.academicYearId ==
+                      academicId.getYearId()).toList();
               return ListView.builder(
                 scrollDirection: Axis.horizontal,
                 itemCount: classList.length,
-                itemBuilder: (context,index){
-                  return Consumer<ClassNotifier>(
-                    builder: (context,classIdNotify,child){
+                itemBuilder: (context, index) {
+                  return Consumer<fetchingClassIDNotifier>(
+                    builder: (context, classIdNotify, child) {
                       return InkWell(
-                        onTap: (){
+                        onTap: () {
                           setState(() {
                             currentSelectedIndex = index;
-                            classIdNotify.changeSetupClassClassID(classList[index].id);
-
+                            classIdNotify.changeClassClassID(
+                                classList[index].id);
                           });
                         },
                         child: Container(
                           margin: const EdgeInsets.symmetric(horizontal: 10),
-                          height:SizeConfig.hp(5),
+                          height: SizeConfig.hp(5),
                           alignment: Alignment.center,
                           width: 120,
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(15),
-                            color:currentSelectedIndex == index ?AppColors.redAccent:AppColors.white,
+                            color: currentSelectedIndex == index ? AppColors
+                                .redAccent : AppColors.white,
                           ),
-                          child:Padding(
+                          child: Padding(
                             padding: EdgeInsets.symmetric(horizontal: 2),
                             child: FittedBox(
                                 fit: BoxFit.contain,
-                                child: Text(classList[index].classes,maxLines: 1,)),
+                                child: Text(
+                                  classList[index].classes, maxLines: 1,)),
                           ),),
                       );
                     },
@@ -275,19 +273,25 @@ class _HomeWorkState extends State<HomeWork> {
                 },
               );
             }
-            else{
+            else if (snapshot.hasData == null) {
+              return Text('null');
+            }
+            else {
               return Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Container(
-                      height:SizeConfig.hp(7),
-                      width:150,
+                      height: SizeConfig.hp(7),
+                      width: 150,
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.baseline,
                         textBaseline: TextBaseline.alphabetic,
                         children: [
-                          Text(' Loading ',style: TextStyle(color: AppColors.loginBackgroundColor,letterSpacing: .5,fontSize: SizeConfig.textScaleFactor * 10,),),
+                          Text(' Loading ', style: TextStyle(
+                            color: AppColors.loginBackgroundColor,
+                            letterSpacing: .5,
+                            fontSize: SizeConfig.textScaleFactor * 10,),),
                           TyperAnimatedTextKit(
                               text: [
                                 '.......',
@@ -296,7 +300,9 @@ class _HomeWorkState extends State<HomeWork> {
                               speed: Duration(milliseconds: 100),
                               textStyle: TextStyle(
                                   color: AppColors.redAccent,
-                                  letterSpacing: 5,fontSize: SizeConfig.textScaleFactor * 30,fontWeight: FontWeight.bold
+                                  letterSpacing: 5,
+                                  fontSize: SizeConfig.textScaleFactor * 30,
+                                  fontWeight: FontWeight.bold
                               ),
                               textAlign: TextAlign.start,
                               alignment: AlignmentDirectional.topStart
@@ -307,7 +313,6 @@ class _HomeWorkState extends State<HomeWork> {
               );
             }
           }
-
       ),
     );
   }

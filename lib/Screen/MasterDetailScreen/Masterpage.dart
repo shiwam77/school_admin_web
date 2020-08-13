@@ -80,15 +80,17 @@ class _MasterPageState extends State<MasterPage> {
   }
 
   Widget masterItem(int index) {
-    return Consumer<NavIndex>(
-      builder: (context,navIndex,child){
+    return Consumer2<NavIndex,ClassNotifier>(
+      builder: (context,navIndex,classIdNotify,child){
         return InkWell(
           onTap: () {
+            final classIdProvider = Provider.of<fetchingClassIDNotifier>(context,listen: false);
+            classIdNotify.changeClassClassID(null);
+            classIdProvider.changeClassClassID(null);
+            Future.delayed(Duration(milliseconds: 3000));
             setState(() {
               currentSelectedIndex = index;
               navIndex.changeIndex(index);
-              final classIdProvider = Provider.of<ClassNotifier>(context,listen: false);
-              classIdProvider.changeSetupClassClassID(null);
             });
           },
           child: Padding(
