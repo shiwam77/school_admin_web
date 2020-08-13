@@ -88,7 +88,7 @@ class _MasterPageState extends State<MasterPage> {
               currentSelectedIndex = index;
               navIndex.changeIndex(index);
               final classIdProvider = Provider.of<ClassNotifier>(context,listen: false);
-              classIdProvider.changeClassID(null);
+              classIdProvider.changeSetupClassClassID(null);
             });
           },
           child: Padding(

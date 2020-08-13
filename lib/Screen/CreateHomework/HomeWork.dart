@@ -31,13 +31,11 @@ class _HomeWorkState extends State<HomeWork> {
   List<ClassModel> classList;
   int currentSelectedIndex;
   List<HomeworkModel> homeworkList =[];
+  List<HomeworkModel> snapshotHomework;
   DateTime currentDateTime =DateTime.now();
   File file;
   @override
   Widget build(BuildContext context) {
-    setState(() {
-      file = null;
-    });
     final classIdProvider = Provider.of<ClassNotifier>(context,listen: true);
     return Expanded(child: Container(
       width: double.infinity,
@@ -61,6 +59,7 @@ class _HomeWorkState extends State<HomeWork> {
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
+              SizedBox(),
               Text('Please select the class below',
                 maxLines: 2,
                 style: TextStyle(color: AppColors.redAccent,
@@ -111,7 +110,7 @@ class _HomeWorkState extends State<HomeWork> {
           ),
           SizedBox(height: SizeConfig.hp(2),),
           classTile(),
-          classIdProvider.getClassId() != null?
+          classIdProvider.getClassSetupClassId() != null?
           subjectTileWithHomework():SizedBox(),
         ],
       ),
@@ -131,7 +130,7 @@ class _HomeWorkState extends State<HomeWork> {
         child: FutureBuilder(
           future: subjectProvider.fetchClass(),
           builder: (context,snapshot){
-            List<HomeworkModel> homework = [];
+
             List<SubjectModel> subjects;
             if(snapshot.hasData){
               subjects = snapshot.data;
@@ -141,19 +140,18 @@ class _HomeWorkState extends State<HomeWork> {
                 builder: (context,snapshot2){
                   homeworkList = [];
                   List<SubjectModel> currentSubjects = subjectList
-                      .where((element) => element.academicId == academicId.getYearId() && element.classId == classIdProvider.getClassId()).toList();
+                      .where((element) => element.academicId == academicId.getYearId() && element.classId == classIdProvider.getClassSetupClassId()).toList();
                   if(snapshot2.hasData){
-                    homework = snapshot2.data;
+                    snapshotHomework = snapshot2.data;
                     currentSubjects.forEach((element) {
-                      HomeworkModel currentSubjectHomework =  homework.firstWhere((e) => e.subjectId == element.id && e.time == currentDateTime.toString(),orElse: ()=>null);
+                      HomeworkModel currentSubjectHomework =  snapshotHomework.firstWhere((e) => e.classId == element.classId && e.academicId == element.academicId && e.subjectId == element.id && e.time == toStoreDate(currentDateTime).toString(),orElse: ()=>null);
                       if(currentSubjectHomework != null){
-                        print('true');
                         homeworkList.add(currentSubjectHomework);
                       }
                       else{
-                        print('false');
+
                         HomeworkModel noHomework = HomeworkModel(subjectId: element.id,classId: element.classId,academicId: element.academicId,
-                            subject: element.subject,time: currentDateTime.toString());
+                            subject: element.subject,time: toStoreDate(currentDateTime).toString());
                         homeworkList.add(noHomework);
                       }
                     }
@@ -171,7 +169,7 @@ class _HomeWorkState extends State<HomeWork> {
                           children: [
                             InkWell(
                               onTap: () {
-                                addHomeworkInput(context,homeworkList[index]);
+                                addHomeworkInput(context,homeworkList[index],snapshotHomework);
                               },
                               child: Container(
                                 padding: EdgeInsets.only(left: 20,right: 20),
@@ -221,6 +219,12 @@ class _HomeWorkState extends State<HomeWork> {
       ),
     );
   }
+  update(HomeworkModel oldHomework,HomeworkModel newHomework){
+    setState(() {
+      int index = homeworkList.indexOf(oldHomework);
+      homeworkList.insert(index, newHomework);
+    });
+  }
   Widget classTile(){
     final classProvider = Provider.of<ClassViewModel >(context,listen: true);
     final academicId  = Provider.of<YearNotifier>(context,listen: true);
@@ -245,7 +249,7 @@ class _HomeWorkState extends State<HomeWork> {
                         onTap: (){
                           setState(() {
                             currentSelectedIndex = index;
-                            classIdNotify.changeClassID(classList[index].id);
+                            classIdNotify.changeSetupClassClassID(classList[index].id);
 
                           });
                         },
@@ -331,8 +335,15 @@ class _HomeWorkState extends State<HomeWork> {
       ],
     );
   }
-  addHomeworkInput(BuildContext context,HomeworkModel homework){
-
+  addHomeworkInput(BuildContext context,HomeworkModel homework,List<HomeworkModel> snapshotHomework){
+    String subject;
+    String givenBy = homework.givenBy;
+    String taskTittle = homework.taskTittle;
+    String chapter = homework.chapter;
+    String description = homework.description;
+    String comment = homework.comment;
+    String pdfUrl;
+    String time = currentDateTime.toString();
     return showPopupWindow(
       context,
       gravity: KumiPopupGravity.center,
@@ -396,14 +407,14 @@ class _HomeWorkState extends State<HomeWork> {
                                       height: 30,
                                       width:200,
                                       child: TextField(
+                                        enabled: false,
+                                        readOnly: true,
                                         controller: TextEditingController(text: homework.subject),
                                         style: TextStyle(
                                             color: Color(0xff263859),
                                             fontSize: SizeConfig.textScaleFactor * 20,
                                             fontWeight: FontWeight.bold),
-                                        onChanged: (value){
 
-                                        },
                                         decoration: InputDecoration(
                                             hintStyle: TextStyle(
                                                 fontSize: SizeConfig.textScaleFactor * 15,
@@ -430,7 +441,7 @@ class _HomeWorkState extends State<HomeWork> {
                                             fontSize: SizeConfig.textScaleFactor * 20,
                                             fontWeight: FontWeight.w300),
                                         onChanged: (value){
-
+                                         givenBy = value;
                                         },
                                         decoration: InputDecoration(
                                             hintText: 'Given By',
@@ -455,6 +466,23 @@ class _HomeWorkState extends State<HomeWork> {
                                 style: TextStyle(color: AppColors.white,fontSize: SizeConfig.textScaleFactor * 15),
                               ),
                               onPressed: () {
+                                final homeworkProvider = Provider.of<HomeWorkViewModel>(context,listen: false);
+                                   HomeworkModel saveHomework = HomeworkModel(classId: homework.classId,academicId: homework.academicId,subjectId: homework.subjectId,time: homework.time,
+                                   subject: homework.subject,givenBy: givenBy,chapter: chapter,taskTittle: taskTittle,comment: comment,description: description,);
+                                     var checkTodaysHomework = snapshotHomework.firstWhere((e) => e.academicId == homework.academicId && e.classId == homework.classId &&
+                                         e.subjectId == homework.subjectId && e.time == homework.time,orElse: ()=> null);
+                                     if(checkTodaysHomework == null){
+                                       print('true');
+                                       homeworkProvider.addHomework(saveHomework);
+                                       update(homework,saveHomework);
+                                     }
+                                     else{
+                                       print('false');
+                                       homeworkProvider.updateHomework(saveHomework, homework.id);
+                                       update(homework,saveHomework);
+                                     }
+                                     Navigator.pop(context);
+
 
                               },
                             ),
@@ -489,9 +517,92 @@ class _HomeWorkState extends State<HomeWork> {
                                     blurRadius: 6,
                                   )
                                 ]),
+                            child: Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 20),
+                              child: Row(
+                                children: [
+                                  Row(
+                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    children: [
+                                    Text('Chapter',style: TextStyle(color: AppColors.redAccent,fontSize: 40,fontWeight: FontWeight.w800),)
+                                  ],),
+                                  SizedBox(width: 30,),
+                                  Container(height: 50,width: .5,color: Color(0xff6B778D),),
+
+                                  Column(
+                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    children: [
+                                    Row(
+                                      children: [
+                                        SizedBox(width: 75,),
+                                        SizedBox(
+                                          height: 30,
+                                          width:300,
+                                          child: TextField(
+                                            textAlign: TextAlign.center,
+                                            controller: TextEditingController(text: homework.chapter == null?'':homework.chapter),
+                                            style: TextStyle(
+                                                color: Color(0xff263859),
+                                                fontSize: SizeConfig.textScaleFactor * 25,
+                                                fontWeight: FontWeight.bold),
+                                            onChanged: (value){
+                                           chapter = value;
+                                            },
+                                            decoration: InputDecoration(
+                                              hintText: 'Chapter Name',
+                                                hintStyle: TextStyle(
+                                                    fontSize: SizeConfig.textScaleFactor * 15,
+                                                    fontWeight: FontWeight.w500),
+                                                contentPadding: EdgeInsets.symmetric(vertical: 5),
+                                                border: InputBorder.none
+                                            ),),
+                                        ),
+                                      ],
+                                    ),
+                                      SizedBox(height: 20,),
+                                      Row(
+                                        children: [
+                                          SizedBox(width: 10,),
+                                          Text('Tittle :-',style: TextStyle(color: AppColors.redAccent,fontStyle: FontStyle.italic,fontSize: 18),),
+                                          SizedBox(width: 10,),
+                                          SizedBox(
+                                            width:200,
+                                            child: TextField(
+                                              controller: TextEditingController(text: homework.taskTittle == null?"":homework.taskTittle),
+                                              style: TextStyle(
+                                                  color: Color(0xff263859),
+                                                  fontSize: SizeConfig.textScaleFactor * 20,
+                                                  fontWeight: FontWeight.bold),
+                                              onChanged: (value){
+                                               taskTittle = value;
+                                              },
+                                              decoration: InputDecoration(
+                                                  hintStyle: TextStyle(
+                                                      fontSize: SizeConfig.textScaleFactor * 15,
+                                                      fontWeight: FontWeight.w500),
+                                                  contentPadding: EdgeInsets.symmetric(vertical: 5),
+                                                  border: InputBorder.none
+                                              ),),
+                                          ),
+                                        ],
+                                      ),
+                                  ],)
+                                ],
+                              ),
+                            ),
                           ) ,
                         ),
                         SizedBox(height: 20,),
+                        Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 55),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              Text('Description',style: TextStyle(color:Color(0xff263859),
+                                  fontSize: SizeConfig.textScaleFactor * 20,
+                                  fontWeight: FontWeight.bold),),
+                            ],),
+                        ),
                         Padding(
                           padding: EdgeInsets.symmetric(horizontal: 50,vertical: 10),
                           child:Container(
@@ -510,19 +621,19 @@ class _HomeWorkState extends State<HomeWork> {
                             child:Padding(
                               padding: EdgeInsets.symmetric(horizontal: 10),
                               child: TextField(
-                                maxLines: 10,
+                                maxLines: 6,
                                 controller: TextEditingController(text: homework == null?'':homework.description),
                                 style: TextStyle(
                                     color: Color(0xff263859),
                                     fontSize: SizeConfig.textScaleFactor * 20,
                                     fontWeight: FontWeight.bold),
                                 onChanged: (value){
-
+                                 description = value;
                                 },
                                 decoration: InputDecoration(
-                                  hintText: 'Description',
+                                  hintText: 'Write task description',
+                                    alignLabelWithHint: true,
                                     hintStyle: TextStyle(
-                                        fontSize: SizeConfig.textScaleFactor * 15,
                                         fontWeight: FontWeight.w500),
                                     contentPadding: EdgeInsets.symmetric(vertical: 5),
                                     border: InputBorder.none
@@ -535,12 +646,10 @@ class _HomeWorkState extends State<HomeWork> {
                           padding: EdgeInsets.symmetric(horizontal: 50),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            crossAxisAlignment: CrossAxisAlignment.baseline,
-                            textBaseline: TextBaseline.alphabetic,
                             children: [
                               Container(
                                 width: 200,
-                                height: 85,
+                                height: 100,
                                 decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(16),
                                     color: AppColors.white,
@@ -551,6 +660,35 @@ class _HomeWorkState extends State<HomeWork> {
                                         blurRadius: 6,
                                       )
                                     ]),
+                                child: Column(
+                                  children: [
+                                    Padding(
+                                      padding:  EdgeInsets.symmetric(vertical: 2),
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        children: [Text('Comment -',style:  TextStyle(
+                                          color: Color(0xff263859),fontWeight: FontWeight.bold,
+                                        ),)],
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: EdgeInsets.symmetric(horizontal: 10),
+                                      child: TextField(
+                                        maxLines: 3,
+                                        controller: TextEditingController(text: homework == null?'':homework.comment == null?"":homework.comment),
+                                        style: TextStyle(
+                                            color: Color(0xff263859),
+                                           ),
+                                        onChanged: (value){
+                                          comment = value;
+                                        },
+                                        decoration: InputDecoration(
+                                            contentPadding: EdgeInsets.symmetric(vertical: 5),
+                                            border: InputBorder.none
+                                        ),),
+                                    ),
+                                  ],
+                                ),
                               ),
                               Row(
                                 children: [
@@ -617,4 +755,15 @@ String toHumanReadableDate(DateTime timestamp) {
   ]).format("dd,MMM");
   return jiffy;
 }
-
+String toStoreDate(DateTime timestamp) {
+  var moonLanding = timestamp;
+  var jiffy = Jiffy([
+    moonLanding.year,
+    moonLanding.month,
+    moonLanding.day,
+    moonLanding.hour,
+    moonLanding.minute,
+    00,
+  ]).format("dd,MMM yyy");
+  return jiffy;
+}
