@@ -1,3 +1,5 @@
+import 'dart:html';
+
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
@@ -13,12 +15,10 @@ import 'package:school_admin_web/Screen/ClassSetup/ViewModel/classCRUD.dart';
 import 'package:school_admin_web/Screen/CreateHomework/HomeWork.dart';
 
 import '../../Color.dart';
-import '../../Color.dart';
-import '../../Color.dart';
 import '../../Responsive.dart';
 import '../ClassSetup/Model/StudentModel.dart';
 import '../ClassSetup/ViewModel/StudentCRUD.dart';
-
+List<AttendanceModel> attendanceList =[];
 class Attendances{
   static String present='Present';
   static String absent='Absent';
@@ -26,6 +26,14 @@ class Attendances{
   static String holiday='Holiday';
   static String none='None';
 }
+enum AttendanceType{
+  Present,Absent,OnLeave,Holiday
+}
+const presentColor = Color(0xff39CE15);
+const absentColor = Color(0xffFF3B3B);
+const onLeaveColor = Color(0xff00B9BA);
+const holidayColor = Color(0xff6B778D);
+const noneColor = AppColors.white;
 class Attendance extends StatefulWidget {
   @override
   _AttendanceState createState() => _AttendanceState();
@@ -35,17 +43,8 @@ class _AttendanceState extends State<Attendance> {
   DateTime currentDateTime =DateTime.now();
   List<ClassModel> classList;
   int currentSelectedIndex;
-  List<AttendanceModel> attendanceList;
+
   List<AttendanceModel> snapShotAttendanceList;
-  Color presentColor = Color(0xff39CE15);
-  Color present;
-  Color absentColor = Color(0xffFF3B3B);
-  Color absent;
-  Color onLeaveColor = Color(0xff00B9BA);
-  Color onLeave;
-  Color holidayColor = Color(0xff6B778D);
-  Color holiday;
-  Color noneColor = AppColors.white;
   @override
   Widget build(BuildContext context) {
     final attendanceProvider = Provider.of<AttendanceViewModel>(context,listen: true);
@@ -90,15 +89,20 @@ class _AttendanceState extends State<Attendance> {
                     ),
                     child: InkWell(
                       onTap: () async {
-                        currentDateTime = await  showDatePicker(
-                          context: context,
-                          initialDate: DateTime.now(),
-                          firstDate: DateTime(2015, 8),
-                          lastDate: DateTime(2101),
-                        );
-                        setState(() {
+                        try{
+                          currentDateTime = await  showDatePicker(
+                            context: context,
+                            initialDate: DateTime.now(),
+                            firstDate: DateTime(2015, 8),
+                            lastDate: DateTime(2101),
+                          );
+                          setState(() {
+                          });
+                        }
+                        catch(ex){
+                          print(ex);
+                        }
 
-                        });
                       },
                       child: Container(
                         width: 75,
@@ -127,7 +131,7 @@ class _AttendanceState extends State<Attendance> {
               SizedBox(height: SizeConfig.hp(2),),
               classTile(),
               SizedBox(height: SizeConfig.hp(2),),
-              Padding(
+              classIdProvider.getClassId() != null? Padding(
                 padding: EdgeInsets.symmetric(horizontal: SizeConfig.wp(4)),
                 child: Container(
                   margin: EdgeInsets.symmetric(horizontal: 70,vertical: 15),
@@ -150,114 +154,116 @@ class _AttendanceState extends State<Attendance> {
                     ],
                   ),
                 ),
-              ),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: SizeConfig.wp(4)),
-                child: Container(
-                  margin: EdgeInsets.symmetric(horizontal: 50,vertical: 15),
-                  width: double.infinity,
-                  height: SizeConfig.hp(55),
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
-                      color: Color(0xffFFFFFF),
-                      boxShadow: [
-                        BoxShadow(
-                            color: Color(0xff707070).withOpacity(.4),
-                            offset: Offset(0, 0),
-                            blurRadius: 10),
-                      ]),
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 40,vertical: 10),
-                    child: FutureBuilder(
-                      future: studentProvider.fetchStudent(),
-                      builder: (context,snapShot){
-                        List<StudentModel> getStudentList;
-                        if(snapShot.hasData){
-                          getStudentList = snapShot.data;
-                          return FutureBuilder(
-                            future: attendanceProvider.fetchAttendance(),
-                              builder: (context,snapShot2){
-                                attendanceList =[];
-                                List<StudentModel> currentStudentList = getStudentList.where((e) => e.academicId == academicId.getYearId()&&
-                                    e.classId == classIdProvider.getClassId()).toList();
-                              if(snapShot2.hasData){
-                               snapShotAttendanceList = snapShot2.data;
-                               currentStudentList.forEach((element) {
-                                 AttendanceModel currentAttendance = snapShotAttendanceList.firstWhere((e) => e.classId == element.classId && e.academicId == element.academicId &&
-                                 e.studentId == element.id && e.date == toStoreDate(currentDateTime).toString(),orElse: ()=>null);
-                                 if(currentAttendance != null){
-                                   attendanceList.add(currentAttendance);
-                                 }
-                                 else{
-                                   AttendanceModel noAttendance = AttendanceModel(academicId: element.id,classId: element.classId,studentId:element.id,studentName: element.studentName,
-                                   date: toStoreDate(currentDateTime).toString(),attendance: Attendances.present.toString(),rollNo: element.rollNo);
-                                   attendanceList.add(noAttendance);
-                                 }
-                               });
-                                return ListView.builder(
-                                    scrollDirection: Axis.vertical,
-                                    itemCount:attendanceList.length,
-                                    itemBuilder: (context,index){
-
-                                      return Container(
-                                          width: double.infinity,
-                                          height:  50,
-                                          child: Row(
-                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              Text('${attendanceList[index].rollNo}.',style: TextStyle(color: Color(0xff263859),fontWeight: FontWeight.w300)),
-                                              Text(attendanceList[index].studentName,style: TextStyle(color: Color(0xff263859),fontWeight: FontWeight.w300),),
-                                              SizedBox(width: 20,),
-                                              InkWell(
-                                                onTap: (){
-                                                 present == noneColor ?present= presentColor :present =noneColor;
-                                                },
-                                                child: CircleAvatar(
-                                                    backgroundColor:presentColor,
-                                                    radius: 15,
-                                                    child: Text('P')),
-                                              ),
-                                              InkWell(
-                                                child: CircleAvatar(
-                                                    backgroundColor: absent,
-                                                    radius: 15,
-                                                    child: Text('A')),
-                                              ),
-                                              InkWell(
-                                                  child: CircleAvatar(
-                                                    backgroundColor: onLeave,
-                                                    radius: 15,
-                                                    child: Text('L')),
-                                              ),
-                                              InkWell(
-                                                child: CircleAvatar(
-                                                    backgroundColor: holiday,
-                                                    radius: 15,
-                                                    child: Text('H')),
-                                              ),
-                                            ],
-                                          )
-                                      );
-                                    });
-                              }
-                              else{
-                                return SizedBox();
-                              }
+              ):SizedBox(),
+              classIdProvider.getClassId() != null?Expanded(
+                child:Padding(
+                  padding: EdgeInsets.symmetric(horizontal: SizeConfig.wp(4)),
+                  child: Container(
+                    margin: EdgeInsets.symmetric(horizontal: 50,vertical: 15),
+                    width: double.infinity,
+                    height: SizeConfig.hp(55),
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(20),
+                        color: Color(0xffFFFFFF),
+                        boxShadow: [
+                          BoxShadow(
+                              color: Color(0xff707070).withOpacity(.4),
+                              offset: Offset(0, 0),
+                              blurRadius: 10),
+                        ]),
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 40,vertical: 10),
+                      child: FutureBuilder(
+                        future: studentProvider.fetchStudent(),
+                        builder: (context,snapShot){
+                          List<StudentModel> getStudentList;
+                          if(snapShot.hasData){
+                            getStudentList = snapShot.data;
+                            return StreamBuilder(
+                              stream: attendanceProvider.fetchAttendanceAsStream(),
+                              builder: (context,AsyncSnapshot<QuerySnapshot> snapShot2){
+                                if( attendanceList.length > 0){
+                                  attendanceList.clear();
+                                }
+                                if(snapShot2.hasData){
+                                  List<StudentModel> currentStudentList = getStudentList.where((e) => e.academicId == academicId.getYearId()&&
+                                      e.classId == classIdProvider.getClassId()).toList();
+                                  snapShotAttendanceList = snapShot2.data.documents.map((e) => AttendanceModel.fromMap(e.data, e.documentID)).toList();
+                                  currentStudentList.forEach((element) {
+                                    AttendanceModel currentAttendance = snapShotAttendanceList.firstWhere((e) => e.classId == element.classId && e.academicId == element.academicId &&
+                                        e.studentId == element.id && e.date == toStoreDate(currentDateTime).toString(),orElse: ()=>null);
+                                    if(currentAttendance != null){
+                                      attendanceList.add(currentAttendance);
+                                    }
+                                    else{
+                                      AttendanceModel noAttendance = AttendanceModel(academicId: element.academicId,classId: element.classId,studentId:element.id,studentName: element.studentName,
+                                          date: toStoreDate(currentDateTime).toString(),attendance: Attendances.none.toString(),rollNo: element.rollNo);
+                                      attendanceList.add(noAttendance);
+                                    }
+                                  });
+                                  return ListView.builder(
+                                      key: GlobalKey(),
+                                      scrollDirection: Axis.vertical,
+                                      itemCount:attendanceList.length,
+                                      itemBuilder: (context,index){
+                                        Color present= attendanceList[index].attendance == Attendances.present?presentColor:noneColor;
+                                        Color absent =attendanceList[index].attendance == Attendances.absent?absentColor:noneColor;
+                                        Color onLeave = attendanceList[index].attendance == Attendances.onLeave?onLeaveColor:noneColor;
+                                        Color holiday = attendanceList[index].attendance == Attendances.holiday?holidayColor:noneColor;
+                                        return
+                                          DoAttendance(key: GlobalKey(),attendance: attendanceList[index],presentColor: present,absentColor: absent,
+                                            onHolidayColor: holiday,onLeaveColor: onLeave,index: index,);
+                                      });
+                                }
+                                else{
+                                  return SizedBox();
+                                }
                               },
-                          );
-                        }
-                        else{
-                          return SizedBox();
-                        }
-                      },
+                            );
+                          }
+                          else{
+                            return SizedBox();
+                          }
+                        },
+                      ),
                     ),
                   ),
-                ),
-              )
+                ) ,
+              ):SizedBox(),
+              classIdProvider.getClassId() != null?Padding(
+                padding:  EdgeInsets.only(right:SizeConfig.wp(8),bottom: 20 ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [MaterialButton(
+                    color:AppColors.redAccent,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Text(
+                      'Submit',
+                      style: TextStyle(color: AppColors.white,fontSize: SizeConfig.textScaleFactor * 15),
+                    ),
+                    onPressed: () {
+                      attendanceList.forEach((e) {
+                        final attendanceProvider = Provider.of<AttendanceViewModel>(context,listen: false);
+                         var checkedAttendance = snapShotAttendanceList.firstWhere((element) => element.academicId == e.academicId && e.studentId == e.studentId && element.id == e.id && e.date == element.date,orElse:() =>null);
+                         if(checkedAttendance == null){
+                           print('true');
+                           attendanceProvider.addAttendance(e);
+                         }
+                         else{
+                           print('false');
+                           attendanceProvider.updateAttendance(e, e.id);
+                         }
+                      });
+                    },
+                  )],),
+              ):SizedBox(),
             ],
           ),
         ));
   }
+
   Widget screenHeader(String tittle){
     return  Row(
       children: [
@@ -389,4 +395,223 @@ String toStoreDate(DateTime timestamp) {
     00,
   ]).format("dd,MMM yyy");
   return jiffy;
+}
+class DoAttendance extends StatefulWidget {
+  //final context;
+  final AttendanceModel attendance;
+   final int index;
+  final Color presentColor;
+  final Color absentColor;
+  final Color onHolidayColor;
+  final Color onLeaveColor;
+  DoAttendance({Key key,this.attendance,this.presentColor,this.onLeaveColor,this.absentColor,this.onHolidayColor,this.index}):super(key: key);
+  @override
+  _DoAttendanceState createState() => _DoAttendanceState();
+}
+
+class _DoAttendanceState extends State<DoAttendance> {
+  Color presentCheck = noneColor;
+  Color absentCheck  = noneColor;
+  Color onLeaveCheck = noneColor;
+  Color holidayCheck = noneColor;
+  bool present,absent,onHoliday,onLeave = false;
+  @override
+  void initState() {
+    super.initState();
+    setState(() {
+      presentCheck = widget.presentColor;
+      absentCheck = widget.absentColor;
+      onLeaveCheck = widget.onLeaveColor;
+      holidayCheck = widget.onHolidayColor;
+    });
+  }
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      key:  GlobalKey(),
+        width: double.infinity,
+        height:  50,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Container(
+              width: 450,
+              child: Row(
+                children: [
+                  SizedBox(width: 10,),
+                Text('${widget.attendance.rollNo}.',style: TextStyle(color: Color(0xff263859),fontWeight: FontWeight.w500)),
+                  SizedBox(width: 70,),
+                Text(widget.attendance.studentName,style: TextStyle(color: Color(0xff263859),fontWeight: FontWeight.w700),),
+           ],),
+            ),
+            Container(
+              width: 450,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                InkWell(
+                  onTap: (){
+                    // update(AttendanceType.Present);
+                    setState(() {
+                      update(AttendanceType.Present);
+                    });
+                  },
+                  child: Container(
+                    height: 25,
+                    width: 25,
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(15),
+                        color: presentCheck,
+                        boxShadow: [
+                          BoxShadow(
+                              offset: Offset(0,0),
+                              blurRadius: 6
+                          ),
+                        ]
+                    ),
+                    alignment: Alignment.center,
+                    child: Text('P',style: TextStyle(color: presentCheck == presentColor?AppColors.white:presentColor),),
+                  ),
+                ),
+                  SizedBox(width: 20,),
+                InkWell(
+                  onTap: (){
+                    setState(() {
+                      update(AttendanceType.Absent);
+                    });
+                  },
+                  child: Container(
+                    height: 25,
+                    width: 25,
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(15),
+                        color: absentCheck,
+                        boxShadow: [
+                          BoxShadow(
+                              offset: Offset(0,0),
+                              blurRadius: 6
+                          ),
+                        ]
+                    ),
+                    alignment: Alignment.center,
+                    child: Text('A',style: TextStyle(color: absentCheck == absentColor?AppColors.white:absentColor)),
+                  ),
+                ),
+                  SizedBox(width: 20,),
+                InkWell(
+                  onTap: (){
+                    setState(() {
+                      update(AttendanceType.OnLeave);
+                    });
+                  },
+                  child: Container(
+                    height: 25,
+                    width: 25,
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(15),
+                        color: onLeaveCheck,
+                        boxShadow: [
+                          BoxShadow(
+                              offset: Offset(0,0),
+                              blurRadius: 6
+                          ),
+                        ]
+                    ),
+                    alignment: Alignment.center,
+                    child: Text('L',style: TextStyle(color: onLeaveCheck == onLeaveColor?AppColors.white:onLeaveColor)),
+                  ),
+                ),
+                  SizedBox(width: 20,),
+                InkWell(
+                  onTap: (){
+                    setState(() {
+                      update(AttendanceType.Holiday);
+                    });
+                  },
+                  child: Container(
+                    height: 25,
+                    width: 25,
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(15),
+                        color: holidayCheck,
+                        boxShadow: [
+                          BoxShadow(
+                              offset: Offset(0,0),
+                              blurRadius: 6
+                          ),
+                        ]
+                    ),
+                    alignment: Alignment.center,
+                    child: Text('H',style: TextStyle(color: holidayCheck == holidayColor?AppColors.white:holidayColor)),
+                  ),
+                ),
+              ],),
+            ),
+          ],
+        )
+    );
+  }
+  update(AttendanceType attendanceType){
+    if(attendanceType == AttendanceType.Present){
+      if(presentCheck == presentColor){
+        presentCheck = noneColor;
+        widget.attendance.attendance = Attendances.none;
+      }
+      else{
+        presentCheck = presentColor;
+        widget.attendance.attendance = Attendances.present;
+        absentCheck = noneColor;
+        onLeaveCheck = noneColor;
+        holidayCheck = noneColor;
+      }
+      attendanceList.removeAt(widget.index);
+      attendanceList.insert(widget.index, widget.attendance);
+    }
+    else if(attendanceType == AttendanceType.Absent){
+      if(absentCheck == absentColor){
+        absentCheck = noneColor;
+        widget.attendance.attendance = Attendances.none;
+      }
+      else{
+        presentCheck = noneColor;
+        absentCheck = absentColor;
+        widget.attendance.attendance = Attendances.absent;
+        onLeaveCheck = noneColor;
+        holidayCheck = noneColor;
+      }
+      attendanceList.removeAt(widget.index);
+      attendanceList.insert(widget.index, widget.attendance);
+    }
+    else if(attendanceType == AttendanceType.OnLeave){
+      if(onLeaveCheck == onLeaveColor){
+        onLeaveCheck = noneColor;
+        widget.attendance.attendance = Attendances.none;
+      }
+      else{
+        presentCheck = noneColor;
+        absentCheck = noneColor;
+        onLeaveCheck = onLeaveColor;
+        widget.attendance.attendance = Attendances.onLeave;
+        holidayCheck = noneColor;
+      }
+      attendanceList.removeAt(widget.index);
+      attendanceList.insert(widget.index, widget.attendance);
+    }
+
+    else if(attendanceType == AttendanceType.Holiday){
+      if(holidayCheck == holidayColor){
+        holidayCheck = noneColor;
+        widget.attendance.attendance = Attendances.none;
+      }
+      else{
+        presentCheck = noneColor;
+        absentCheck = noneColor;
+        onLeaveCheck = noneColor;
+        holidayCheck = holidayColor;
+        widget.attendance.attendance = Attendances.holiday;
+      }
+      attendanceList.removeAt(widget.index);
+      attendanceList.insert(widget.index, widget.attendance);
+    }
+  }
 }

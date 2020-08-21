@@ -2,7 +2,6 @@
 import 'dart:html';
 
 import 'package:animated_text_kit/animated_text_kit.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker_web/file_picker_web.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -15,7 +14,6 @@ import 'package:school_admin_web/Screen/ClassSetup/Model/SubjectModel.dart';
 import 'package:school_admin_web/Screen/ClassSetup/Notifier/ClassIdNotifier.dart';
 import 'package:school_admin_web/Screen/ClassSetup/ViewModel/classCRUD.dart';
 import 'package:school_admin_web/Screen/ClassSetup/ViewModel/subjectCRUD.dart';
-import 'package:intl/intl.dart';
 import 'package:school_admin_web/Screen/CreateHomework/Model/homeworkModel.dart';
 import 'package:school_admin_web/Screen/CreateHomework/ViewModel/HomeworkCRUD.dart';
 import '../../Color.dart';
@@ -34,7 +32,7 @@ class _HomeWorkState extends State<HomeWork> {
   List<HomeworkModel> homeworkList =[];
   List<HomeworkModel> snapshotHomework;
   DateTime currentDateTime =DateTime.now();
-  File file;
+
   @override
   Widget build(BuildContext context) {
     final classIdProvider = Provider.of<fetchingClassIDNotifier>(context,listen: true);
@@ -341,7 +339,7 @@ class _HomeWorkState extends State<HomeWork> {
     );
   }
   addHomeworkInput(BuildContext context,HomeworkModel homework,List<HomeworkModel> snapshotHomework){
-    String subject;
+
     String givenBy = homework.givenBy;
     String taskTittle = homework.taskTittle;
     String chapter = homework.chapter;
@@ -349,6 +347,7 @@ class _HomeWorkState extends State<HomeWork> {
     String comment = homework.comment;
     String pdfUrl;
     String time = currentDateTime.toString();
+    File file;
     return showPopupWindow(
       context,
       gravity: KumiPopupGravity.center,

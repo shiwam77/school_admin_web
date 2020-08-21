@@ -321,10 +321,10 @@ class _ManageClassState extends State<ManageClass> {
                                   },
                                 ),
                                 onTapAddIcon: ()  {
-                                  popUpWindows(
-                                    child:AddStudentInput(),
-
-                                  );
+//                                  popUpWindows(
+//                                    child:AddStudentInput(),
+                                  addStudentInput(context);
+                                 // );
 
                                 }
                             ),
@@ -733,7 +733,6 @@ class _ManageClassState extends State<ManageClass> {
     String contact = studentList[index].contact;
     String rollNo = studentList[index].rollNo;
     String dob = studentList[index].dateOfBirth;
-
     List <String> getGender = [
     'Male',
     'Female',
@@ -843,7 +842,6 @@ class _ManageClassState extends State<ManageClass> {
                                 });
                               },
                               items: getGender.map<DropdownMenuItem<String>>((String value) {
-
                                 return DropdownMenuItem<String>(
                                   value: value,
                                   child: Text(value),
@@ -1032,7 +1030,6 @@ class _ManageClassState extends State<ManageClass> {
     );
    }
    Widget addClassWidget(){
-
     String classes;
     final academicId  = Provider.of<YearNotifier>(context,listen: true);
     final classProvider = Provider.of<ClassViewModel >(context,listen: true);
@@ -1195,277 +1192,306 @@ class _ManageClassState extends State<ManageClass> {
         willDisplayWidget: child,
     );
   }
-}
 
-
-class AddStudentInput extends StatefulWidget {
-  @override
-  _AddStudentInputState createState() => _AddStudentInputState();
-}
-
-class _AddStudentInputState extends State<AddStudentInput> {
-  List<DropdownMenuItem<Gender>> _dropdownMenuItems;
-  Image pickedImage;
-  Uint8List bytesFromPicker;
-  Gender _selectedGender;
-  String id;
-  String academicId;
-  String classId;
-  String studentName;
-  String rollNo;
-  String fatherName;
-  String motherName;
-  String address;
-  String emailAddress;
-  String dateOfBirth = DateTime.now().toString();
-  String contact;
-  String gender;
-  String imageUrl;
-  String imagePath;
-  @override
-  void initState() {
-    super.initState();
-    _dropdownMenuItems = buildDropDownMenuItems(Gender.getGender);
-    setState(() {
-      _selectedGender = _dropdownMenuItems[0].value;
-      //subjectList = getSubject.toList();
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final academicId  = Provider.of<YearNotifier>(context,listen: true);
-    final classIdProvider = Provider.of<ClassNotifier>(context,listen: true);
-    final studentProvider = Provider.of<StudentViewModel>(context,listen: true);
-    return  Container(
-      width: SizeConfig.screenWidth * .5,
-      height: SizeConfig.screenHeight * .75,
-      child: ListView(
-        children: [
-          Tooltip(
-            message:bytesFromPicker == null ? 'Tap to insert image':'Tap to edit image',
-            margin: EdgeInsets.only(top: 50),
-            padding: EdgeInsets.all(4),
-            child: GestureDetector(
-              onTap:  pickImageAsByte,
-              child: CircleAvatar(
-                  radius: 100,
-                backgroundColor: AppColors.white,
-                child:bytesFromPicker != null ? ClipRRect(
-                  borderRadius: BorderRadius.circular(80),
-                    child: Image.memory(
-                      bytesFromPicker,
-                      fit:BoxFit.fill,width: 170,height: 170,
-                      filterQuality: FilterQuality.high,
-                    )):Icon(
-                  Icons.account_circle,
-                  size: 210,
-                  color: AppColors.redAccent,),
-                  ),
-            ),
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              SizedBox(
-                width:SizeConfig.wp(20),
-                height: 47,
-                child: TextField(
-                  style: TextStyle(
-                      color: Color(0xff263859),
-                      fontSize: SizeConfig.textScaleFactor * 35,
-                      fontWeight: FontWeight.bold),
-                  onChanged: (value){
-                    setState(() {
-                    studentName = value;
-                    });
-                  },
-                  decoration: InputDecoration(
-                      hintText: 'Enter Student Name',
-                      hintStyle: TextStyle(
-                          fontSize: SizeConfig.textScaleFactor * 20,
-                          fontWeight: FontWeight.w500),
-                      contentPadding: EdgeInsets.symmetric(vertical: 5),
-                      border: InputBorder.none
-                  ),),
-              ),
-              SizedBox(width: 15,),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(20, 10, 0, 0),
-                child: Center(
-                  child: Container(
-                    height: 30,
-                    decoration: BoxDecoration(
-                      color: Color(0xFFE2E8F0),
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(16, 0, 4, 0),
-                      child: DropdownButton(
-                        icon: Padding(
-                          padding: const EdgeInsets.fromLTRB(20, 0, 0, 0),
-                          child: Icon(
-                            Icons.arrow_drop_down,
-                            color: Color(0xFF718096),
-                          ),
-                        ),
-                        underline: Container(
-                          height: 1,
-                          color: Colors.transparent,
-                        ),
-                        items: _dropdownMenuItems,
-                        value:_selectedGender,
-                        onChanged: (Gender gender) {
-                          setState(() {
-                            _selectedGender = gender;
-                          });
+  addStudentInput(BuildContext context){
+    Uint8List bytesFromPicker;
+    String studentName;
+    String rollNo;
+    String fatherName;
+    String motherName;
+    String address;
+    String emailAddress;
+    String dateOfBirth = DateTime.now().toString();
+    String contact;
+    String gender = 'Male';
+    String imageUrl;
+    String imagePath;
+    List <String> getGender = [
+      'Male',
+      'Female',
+      'Other',
+    ] ;
+    return showPopupWindow(
+      context,
+      gravity: KumiPopupGravity.rightBottom,
+      bgColor: Colors.grey.withOpacity(0.5),
+      clickOutDismiss: true,
+      clickBackDismiss: true,
+      customAnimation: false,
+      customPop: false,
+      customPage: false,
+      //targetRenderBox: (btnKey.currentContext.findRenderObject() as RenderBox),
+      //childSize: null,
+      underStatusBar: false,
+      underAppBar: true,
+      offsetX: -200,
+      offsetY: -175,
+      duration: Duration(milliseconds: 200),
+      childFun: (pop) {
+        return StatefulBuilder(
+            key: GlobalKey(),
+            builder: (context,StateSetter setState){
+              final academicId  = Provider.of<YearNotifier>(context,listen: true);
+              final classIdProvider = Provider.of<ClassNotifier>(context,listen: true);
+              final studentProvider = Provider.of<StudentViewModel>(context,listen: true);
+              return  Container(
+                padding: EdgeInsets.all(10),
+                height: 575,
+                width: 550,
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(16),
+                    color: AppColors.white,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Color(0xff707070).withOpacity(.4),
+                        offset: Offset(0, 0),
+                        blurRadius: 10,
+                      )
+                    ]),
+                child: Stack(
+                  overflow: Overflow.visible,
+                  children: [
+                    Align(
+                      alignment: Alignment.topRight,
+                      child: GestureDetector(
+                        onTap: (){
+                          Navigator.of(context).pop();
                         },
+                        child: Icon(Icons.close),
                       ),
                     ),
-                  ),
-                ),
-              ),
-            ],),
-         SizedBox(height: 20,),
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal:SizeConfig.wp(3) ),
-            child: Container(
-              height: SizeConfig.screenHeight * .4,
-              width: SizeConfig.screenWidth * .4,
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(16),
-                  color: AppColors.white,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Color(0xff707070).withOpacity(.4),
-                      offset: Offset(0, 0),
-                      blurRadius: 15,
-                    )
-                  ]),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20,vertical: 5),
-                    child: ListView(
+                    Column(
                       children: [
-                        formInput(label: "Roll No",
-                            onChanged: (value){
-                            setState(() {
-                              rollNo = value;
-                            });
-                            }),
-                        formInput(label: "Father's Name",
-                        onChanged: (value){
-                        setState(() {
-                          fatherName = value;
-                        });
-                        }),
-                        formInput(label: "Mother's Name",
-                            onChanged: (value){
-                              setState(() {
-                              motherName = value;
-                              });
-                            }),
-                        formInput(label: "Address",
-                            onChanged: (value){
-                            setState(() {
-                              address = value;
-                            });
-                            }),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Tooltip(
+                              message:bytesFromPicker == null ? 'Tap to insert image':'Tap to edit image',
+                              margin: EdgeInsets.only(top: 10),
+                              padding: EdgeInsets.all(4),
+                              child: GestureDetector(
+                                onTap:  () async{
+                                  Uint8List bytesPicker =
+                                  await ImagePickerWeb.getImage(outputType: ImageType.bytes);
 
-                        formInput(
-                            label: "D.O.B",
-                            hintText: "dd/mm/yyy",
-                            onChanged: (value){
-                            setState(() {
-                              dateOfBirth = value;
-                            });
-                            },),
-                        formInput(label: "Contact",
-                            onChanged: (value){
-                             setState(() {
-                               contact = value;
-                             });
-                            }),
-                        formInput(label: "Email",
-                            onChanged: (value){
-                            setState(() {
-                              emailAddress = value;
-                            });
-                            }),
+                                  if (bytesPicker != null) {
+                                    setState(() {
+                                      bytesFromPicker = bytesPicker;
+                                    });
+
+                                  }
+                                },
+                                child:Container(
+                                  width: 100.0,
+                                  height: 100.0,
+                                  decoration: new BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color:bytesFromPicker == null ? AppColors.redAccent:AppColors.white,
+                                  ),
+                                  alignment: Alignment.center,
+                                  child:bytesFromPicker != null ? ClipRRect(
+                                      borderRadius: BorderRadius.circular(50),
+                                      child: Image.memory(
+                                        bytesFromPicker,
+                                        fit:BoxFit.fill,width: 100,height: 100,
+                                        filterQuality: FilterQuality.high,
+                                      )):Icon(
+                                    Icons.account_circle,
+                                    size: 80,
+                                    color: AppColors.redAccent,),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            SizedBox(
+                              width:SizeConfig.wp(20),
+                              height: 47,
+                              child: TextField(
+                                style: TextStyle(
+                                    color: Color(0xff263859),
+                                    fontSize: SizeConfig.textScaleFactor * 35,
+                                    fontWeight: FontWeight.bold),
+                                onChanged: (value){
+                                  setState(() {
+                                    studentName = value;
+                                  });
+                                },
+                                decoration: InputDecoration(
+                                    hintText: 'Enter Student Name',
+                                    hintStyle: TextStyle(
+                                        fontSize: SizeConfig.textScaleFactor * 20,
+                                        fontWeight: FontWeight.w500),
+                                    contentPadding: EdgeInsets.symmetric(vertical: 5),
+                                    border: InputBorder.none
+                                ),),
+                            ),
+                            SizedBox(width: 15,),
+                            Padding(
+                              padding: const EdgeInsets.fromLTRB(20, 10, 0, 0),
+                              child: Center(
+                                child: Container(
+                                  height: 30,
+                                  decoration: BoxDecoration(
+                                    color: Color(0xFFE2E8F0),
+                                    borderRadius: BorderRadius.circular(16),
+                                  ),
+                                  child: Padding(
+                                    padding: const EdgeInsets.fromLTRB(16, 0, 4, 0),
+                                    child: DropdownButton<String>(
+                                      value: gender,
+                                      icon: Icon(Icons.arrow_drop_down),
+                                      iconSize: 24,
+                                      elevation: 16,
+                                      style: TextStyle(color: Colors.red, fontSize: 18),
+                                      underline: Container(
+                                        height: 2,
+                                        color: Colors.transparent,
+                                      ),
+                                      onChanged: (String data) {
+                                        setState(() {
+                                          gender = data;
+                                        });
+                                      },
+                                      items: getGender.map<DropdownMenuItem<String>>((String value) {
+                                        return DropdownMenuItem<String>(
+                                          value: value,
+                                          child: Text(value),
+                                        );
+
+                                      }).toList(),
+                                    )
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],),
+                        SizedBox(height: 20,),
+                        Padding(
+                          padding: EdgeInsets.symmetric(horizontal:SizeConfig.wp(2) ),
+                          child: Container(
+                            height: SizeConfig.screenHeight * .4,
+                            width: SizeConfig.screenWidth * .3,
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(16),
+                                color: AppColors.white,
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Color(0xff707070).withOpacity(.4),
+                                    offset: Offset(0, 0),
+                                    blurRadius: 15,
+                                  )
+                                ]),
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 20,vertical: 5),
+                              child: ListView(
+                                children: [
+                                  formInput(label: "Roll No",
+                                      onChanged: (value){
+                                          rollNo = value;
+
+                                      }),
+                                  formInput(label: "Father's Name",
+                                      onChanged: (value){
+
+                                          fatherName = value;
+
+                                      }),
+                                  formInput(label: "Mother's Name",
+                                      onChanged: (value){
+
+                                          motherName = value;
+
+                                      }),
+                                  formInput(label: "Address",
+                                      onChanged: (value){
+
+                                          address = value;
+
+                                      }),
+
+                                  formInput(
+                                    label: "D.O.B",
+                                    hintText: "dd/mm/yyy",
+                                    onChanged: (value){
+
+                                        dateOfBirth = value;
+
+                                    },),
+                                  formInput(label: "Contact",
+                                      onChanged: (value){
+
+                                          contact = value;
+
+                                      }),
+                                  formInput(label: "Email",
+                                      onChanged: (value){
+
+                                          emailAddress = value;
+
+                                      }),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(top: 10),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              MaterialButton(
+                                color:AppColors.redAccent,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                child: Text(
+                                  'Save',
+                                  style: TextStyle(fontSize: SizeConfig.textScaleFactor * 15),
+                                ),
+                                onPressed: () {
+                                  studentProvider.addStudent(StudentModel(
+                                    academicId: academicId.getYearId(),
+                                    classId: classIdProvider.getClassId(),
+                                    studentName: studentName,
+                                    rollNo: rollNo,
+                                    fatherName: fatherName,
+                                    motherName: motherName,
+                                    dateOfBirth: dateOfBirth,
+                                    address: address,
+                                    contact: contact,
+                                    emailAddress: emailAddress,
+                                    gender: gender,
+                                    imagePath: '',
+                                    imageUrl: '',
+                                  ));
+                                  Navigator.of(context).pop();
+                                },
+                              ),
+                            ],),
+                        ),
+
                       ],
                     ),
-                  ),
-            ),
-          ),
-          Padding(
-            padding: EdgeInsets.only(top: 10),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                MaterialButton(
-                  color:AppColors.redAccent,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Text(
-                    'Save',
-                    style: TextStyle(fontSize: SizeConfig.textScaleFactor * 15),
-                  ),
-                  onPressed: () {
-                     studentProvider.addStudent(StudentModel(
-                       academicId: academicId.getYearId(),
-                       classId: classIdProvider.getClassId(),
-                       studentName: studentName,
-                       rollNo: rollNo,
-                       fatherName: fatherName,
-                       motherName: motherName,
-                       dateOfBirth: dateOfBirth,
-                       address: address,
-                       contact: contact,
-                       emailAddress: emailAddress,
-                       gender: _selectedGender.gender,
-                       imagePath: '',
-                       imageUrl: '',
-                     ));
-                    Navigator.of(context).pop();
-                  },
+                  ],
                 ),
-            ],),
-          ),
-
-        ],
-      ),
+              );
+            }
+        );
+      },
     );
+
   }
-
-  pickImage() async {
-    Image fromPicker = await ImagePickerWeb.getImage(outputType: ImageType.widget);
-
-    if (fromPicker != null) {
-      setState(() {
-        pickedImage = fromPicker;
-      });
-    }
-  }
-
-  pickImageAsByte() async {
-    Uint8List bytesPicker =
-    await ImagePickerWeb.getImage(outputType: ImageType.bytes);
-
-    if (bytesPicker != null) {
-      setState(() {
-        bytesFromPicker = bytesPicker;
-      });
-
-    }
-  }
-
   Widget formInput({String label,Function onChanged,String hintText,}){
     return  Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(label),
         SizedBox(
-          width: SizeConfig.wp(25),
+          width: SizeConfig.wp(18),
           child: TextField(
             onChanged: onChanged,
             textAlign: TextAlign.center,
@@ -1477,88 +1503,8 @@ class _AddStudentInputState extends State<AddStudentInput> {
       ],
     );
   }
-  List<DropdownMenuItem<Gender>> buildDropDownMenuItems(
-      List<Gender> getGender) {
-    List<DropdownMenuItem<Gender>> items = List();
-    for (Gender gender in getGender) {
-      items.add(DropdownMenuItem(
-        value: gender,
-        child: Text(gender.gender),
-      ));
-    }
-    return items;
-  }
 }
 
 
-//Todo:- Change in future
-addStudentInput(BuildContext context){
-  List<DropdownMenuItem<Gender>> _dropdownMenuItems;
-  Image pickedImage;
-  Uint8List bytesFromPicker;
-  Gender _selectedGender;
-  String id;
-  String academicId;
-  String classId;
-  String studentName;
-  String rollNo;
-  String fatherName;
-  String motherName;
-  String address;
-  String emailAddress;
-  String dateOfBirth;
-  String contact;
-  String gender;
-  String imageUrl;
-  String imagePath;
-  return showPopupWindow(
-    context,
-    gravity: KumiPopupGravity.leftBottom,
-    bgColor: Colors.grey.withOpacity(0.5),
-    clickOutDismiss: true,
-    clickBackDismiss: true,
-    customAnimation: false,
-    customPop: false,
-    customPage: false,
-    //targetRenderBox: (btnKey.currentContext.findRenderObject() as RenderBox),
-    //childSize: null,
-    underStatusBar: false,
-    underAppBar: true,
-    offsetX: -200,
-    offsetY: -175,
-    duration: Duration(milliseconds: 200),
-    childFun: (pop) {
-      return Container(
-        key: GlobalKey(),
-        padding: EdgeInsets.all(10),
-        height: 575,
-        width: 550,
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(16),
-            color: AppColors.white,
-            boxShadow: [
-              BoxShadow(
-                color: Color(0xff707070).withOpacity(.4),
-                offset: Offset(0, 0),
-                blurRadius: 10,
-              )
-            ]),
-        child: Stack(
-          children: [
-            Align(
-              alignment: Alignment.topRight,
-              child: InkWell(
-                onTap: (){
-                  Navigator.pop(context);
-                },
-                child: Icon(Icons.close),
-              ),
-            ),
 
-          ],
-        ),
-      );
-    },
-  );
 
-}

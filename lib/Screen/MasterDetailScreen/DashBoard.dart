@@ -7,8 +7,12 @@ import 'package:school_admin_web/Screen/ClassSetup/ManageClass.dart';
 import 'package:school_admin_web/Screen/ClassSetup/Model/ClassModel.dart';
 import 'package:school_admin_web/Screen/ClassSetup/ViewModel/classCRUD.dart';
 import 'package:school_admin_web/Screen/CreateHomework/HomeWork.dart';
+import 'package:school_admin_web/Screen/ExamSchedule/ExamSchedule.dart';
 import 'package:school_admin_web/Screen/Home/Home.dart';
 import 'package:school_admin_web/Screen/NewStudent/NewStudent.dart';
+import 'package:school_admin_web/Screen/Notification/Notification.dart';
+import 'package:school_admin_web/Screen/TimeTable/TimeTable.dart';
+import 'package:school_admin_web/Screen/Tutor/Tutor.dart';
 
 
 import '../../Color.dart';
@@ -113,7 +117,16 @@ class _DashBoardState extends State<DashBoard> {
                           } else if (navIndex.getCounter() == 4) {
                             screen = Attendance();
                           } else if (navIndex.getCounter() == 5) {
-                            screen = Home();
+                            screen = ExamSchedule();
+                          }
+                          else if (navIndex.getCounter() == 6) {
+                            screen = TimeTable();
+                          }
+                          else if (navIndex.getCounter() == 7) {
+                            screen = Tutor();
+                          }
+                          else if (navIndex.getCounter() == 8) {
+                            screen = CreateNotification();
                           }
                           return screen;
                         },
