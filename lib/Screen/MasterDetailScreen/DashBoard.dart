@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:provider/provider.dart';
 import 'package:school_admin_web/Screen/AcademicYear/AcademicYearChangeNotifier.dart';
+import 'package:school_admin_web/Screen/Account/Account.dart';
 import 'package:school_admin_web/Screen/Attendance/Attendance.dart';
 import 'package:school_admin_web/Screen/ClassSetup/ManageClass.dart';
 import 'package:school_admin_web/Screen/ClassSetup/Model/ClassModel.dart';
@@ -127,6 +128,9 @@ class _DashBoardState extends State<DashBoard> {
                           }
                           else if (navIndex.getCounter() == 8) {
                             screen = CreateNotification();
+                          }
+                          else if (navIndex.getCounter() == 9) {
+                            screen = Account();
                           }
                           return screen;
                         },
