@@ -622,10 +622,3 @@ List<String> metrics() {
   }
   return absent;
 }
-Widget getShimmerWidget(Widget targetWidget) {
-  return Shimmer.fromColors(
-    baseColor: AppColors.textColorLight.withOpacity(0.1),
-    highlightColor: AppColors.textColorLight.withOpacity(0.2),
-    child: targetWidget,
-  );
-}

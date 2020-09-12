@@ -4,15 +4,14 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:school_admin_web/Model/AcademicYear.dart';
+import 'package:school_admin_web/Color.dart';
+import 'package:school_admin_web/Image.dart';
+import 'package:school_admin_web/Responsive.dart';
 import 'package:school_admin_web/Screen/AcademicYear/Model/AcademicYearModel.dart';
 import 'package:school_admin_web/Screen/MasterDetailScreen/DashBoard.dart';
 
 import 'package:school_admin_web/Widget/CenterView.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import '../../Color.dart';
-import '../../Image.dart';
-import '../../Responsive.dart';
 import 'AcademicYearChangeNotifier.dart';
 import 'ViewModel/CrudViewModel.dart';
 

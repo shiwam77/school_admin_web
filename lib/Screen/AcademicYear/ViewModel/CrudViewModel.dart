@@ -1,9 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:school_admin_web/Locater.dart';
 import 'package:school_admin_web/Screen/AcademicYear/Model/AcademicYearModel.dart';
 import 'package:school_admin_web/Service/FirebaseApi.dart';
 
-import '../../../Locater.dart';
+
 
 class AcademicYearViewModel extends ChangeNotifier {
   Api _api = classLocator<Api>();

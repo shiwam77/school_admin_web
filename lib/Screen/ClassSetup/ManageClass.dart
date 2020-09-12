@@ -7,15 +7,14 @@ import  'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:kumi_popup_window/kumi_popup_window.dart';
 import 'package:provider/provider.dart';
+import 'package:school_admin_web/Color.dart';
+import 'package:school_admin_web/Responsive.dart';
 import 'package:school_admin_web/Screen/AcademicYear/AcademicYearChangeNotifier.dart';
 import 'package:school_admin_web/Screen/ClassSetup/Model/StudentModel.dart';
 import 'package:school_admin_web/Screen/ClassSetup/Model/SubjectModel.dart';
 import 'package:school_admin_web/Screen/ClassSetup/ViewModel/StudentCRUD.dart';
-import '../../Color.dart';
-import '../../Responsive.dart';
 import 'package:popup_box/popup_box.dart';
-
-import '../../Utiity.dart';
+import 'package:school_admin_web/Utiity.dart';
 import 'Model/ClassModel.dart';
 import 'Notifier/ClassIdNotifier.dart';
 import 'ViewModel/classCRUD.dart';
